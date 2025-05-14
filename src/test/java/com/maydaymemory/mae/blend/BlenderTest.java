@@ -199,22 +199,7 @@ public class BlenderTest {
     @Test
     public void testSimpleLayeredBlender() {
         ZYXBoneTransformFactory transformFactory = new ZYXBoneTransformFactory();
-        Skeleton skeleton = new Skeleton() {
-            @Override
-            public int getBoneCount() {
-                return 2;
-            }
-
-            @Override
-            public int getParentIndex(int boneIndex) {
-                return boneIndex == 1 ? 0 : -1;
-            }
-
-            @Override
-            public Collection<Integer> getChildren(int boneIndex) {
-                return boneIndex == 0 ? List.of(1) : List.of();
-            }
-
+        SkeletonDescendantAccessor skeleton = new SkeletonDescendantAccessor() {
             @Override
             public Collection<Integer> getDescendantBoneIndices(int rootBoneIndex, int depth) {
                 if (depth == 1) {

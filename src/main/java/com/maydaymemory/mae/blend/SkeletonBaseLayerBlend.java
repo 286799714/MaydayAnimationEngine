@@ -1,17 +1,16 @@
 package com.maydaymemory.mae.blend;
 
-import com.maydaymemory.mae.basic.Skeleton;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.ints.*;
 
 import java.util.Collection;
 
 public class SkeletonBaseLayerBlend implements LayerBlend{
-    private final Skeleton skeleton;
+    private final SkeletonDescendantAccessor skeleton;
     private final FloatArrayList controlPoints = new FloatArrayList();
     private final Int2ObjectOpenHashMap<IntArraySet> controlBy = new Int2ObjectOpenHashMap<>();
 
-    public SkeletonBaseLayerBlend(Skeleton skeleton) {
+    public SkeletonBaseLayerBlend(SkeletonDescendantAccessor skeleton) {
         this.skeleton = skeleton;
     }
 
