@@ -24,8 +24,8 @@ public class ArrayInterpolatableChannel<T>
         float alphaTime = timeS - keyframe.getTimeS();
         float spanTime = keyframeNext.getTimeS() - keyframe.getTimeS();
         float alpha = alphaTime / spanTime;
-        var interpolator = keyframe.getInterpolator();
-        var interpolatorNext = keyframeNext.getInterpolator();
+        Interpolator<T> interpolator = keyframe.getInterpolator();
+        Interpolator<T> interpolatorNext = keyframeNext.getInterpolator();
         if (interpolator.getPriority().compareTo(interpolatorNext.getPriority()) >= 0) {
             // use previous interpolator if its priority is greater than or equal to next one
             return interpolator.interpolate(this, index, indexNext, alpha);
