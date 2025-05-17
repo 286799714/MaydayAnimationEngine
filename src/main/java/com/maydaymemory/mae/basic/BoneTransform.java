@@ -25,9 +25,9 @@ import javax.annotation.Nonnull;
  */
 public record BoneTransform (
         int boneIndex,
-        Vector3fc translation,
-        RotationView rotation,
-        Vector3fc scale
+        @Nonnull Vector3fc translation,
+        @Nonnull RotationView rotation,
+        @Nonnull Vector3fc scale
 ) implements Comparable<BoneTransform> {
     /**
      * Compares this {@link BoneTransform} with another {@link BoneTransform} by their {@code boneIndex}.
