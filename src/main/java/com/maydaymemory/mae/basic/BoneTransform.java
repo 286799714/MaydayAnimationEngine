@@ -17,18 +17,26 @@ import javax.annotation.Nonnull;
  * This class implements {@link Comparable} to allow sorting based on {@code boneIndex},
  * which facilitates efficient merging of sorted pose data during blending.
  * </p>
- *
- * @param boneIndex   The unique index of the bone within the skeleton hierarchy.
- * @param translation The bone's local-space translation vector.
- * @param rotation    The bone's local-space rotation, represented as a unit quaternion.
- * @param scale       The bone's local-space scale vector.
  */
-public record BoneTransform (
-        int boneIndex,
-        @Nonnull Vector3fc translation,
-        @Nonnull RotationView rotation,
-        @Nonnull Vector3fc scale
-) implements Comparable<BoneTransform> {
+public class BoneTransform implements Comparable<BoneTransform> {
+    private final int boneIndex;
+    private final @Nonnull Vector3fc translation;
+    private final @Nonnull RotationView rotation;
+    private final @Nonnull Vector3fc scale;
+
+    /**
+     * @param boneIndex   The unique index of the bone within the skeleton hierarchy.
+     * @param translation The bone's local-space translation vector.
+     * @param rotation    The bone's local-space rotation, represented as a unit quaternion.
+     * @param scale       The bone's local-space scale vector.
+     */
+    public BoneTransform(int boneIndex, Vector3fc translation, RotationView rotation, Vector3fc scale) {
+        this.boneIndex = boneIndex;
+        this.translation = translation;
+        this.rotation = rotation;
+        this.scale = scale;
+    }
+
     /**
      * Compares this {@link BoneTransform} with another {@link BoneTransform} by their {@code boneIndex}.
      * <p>
@@ -45,6 +53,22 @@ public record BoneTransform (
     @Override
     public int compareTo(@Nonnull BoneTransform transform) {
         return Integer.compare(this.boneIndex, transform.boneIndex);
+    }
+
+    public int boneIndex() {
+        return boneIndex;
+    }
+
+    public Vector3fc translation() {
+        return translation;
+    }
+
+    public RotationView rotation() {
+        return rotation;
+    }
+
+    public Vector3fc scale() {
+        return scale;
     }
 
     public static final BoneTransform IDENTITY_TRANSFORM = new BoneTransform(

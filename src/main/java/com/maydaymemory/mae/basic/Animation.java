@@ -2,7 +2,7 @@ package com.maydaymemory.mae.basic;
 
 import org.joml.Vector3fc;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface Animation {
     /**
@@ -19,7 +19,7 @@ public interface Animation {
      * @param i typically representing a specific bone.
      * @param channel the animation channel
      */
-    void setTranslationChannel(int i, @Nonnull InterpolatableChannel<? extends Vector3fc> channel);
+    void setTranslationChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel);
 
     /**
      * Set a scale animation channel to this animation.
@@ -27,7 +27,7 @@ public interface Animation {
      * @param i typically representing a specific bone.
      * @param channel the animation channel
      */
-    void setScaleChannel(int i, @Nonnull InterpolatableChannel<? extends Vector3fc> channel);
+    void setScaleChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel);
 
     /**
      * Set a rotation animation channel to this animation.
@@ -35,7 +35,7 @@ public interface Animation {
      * @param i typically representing a specific bone.
      * @param channel the animation channel
      */
-    void setRotationChannel(int i, @Nonnull InterpolatableChannel<? extends Vector3fc> channel);
+    void setRotationChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel);
 
     /**
      * Evaluates the animation at the given time and returns the corresponding pose.

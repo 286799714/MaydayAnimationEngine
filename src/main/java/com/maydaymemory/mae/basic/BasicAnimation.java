@@ -3,7 +3,7 @@ package com.maydaymemory.mae.basic;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -39,7 +39,7 @@ public class BasicAnimation implements Animation {
     }
 
     @Override
-    public void setTranslationChannel(int i, @Nonnull InterpolatableChannel<? extends Vector3fc> channel) {
+    public void setTranslationChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
         getOrCreateChannelBunchAnd(i, channelBunch -> channelBunch.translationChannel = channel);
         // Mark end time as dirty, when getting,
         // all channels will be traversed again to calculate the new endTime and then cache it
@@ -47,13 +47,13 @@ public class BasicAnimation implements Animation {
     }
 
     @Override
-    public void setScaleChannel(int i, @Nonnull InterpolatableChannel<? extends Vector3fc> channel) {
+    public void setScaleChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
         getOrCreateChannelBunchAnd(i, channelBunch -> channelBunch.scaleChannel = channel);
         endTimeS = -1;
     }
 
     @Override
-    public void setRotationChannel(int i, @Nonnull InterpolatableChannel<? extends Vector3fc> channel) {
+    public void setRotationChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
         getOrCreateChannelBunchAnd(i, channelBunch -> channelBunch.rotationChannel = channel);
         endTimeS = -1;
     }
@@ -121,8 +121,11 @@ public class BasicAnimation implements Animation {
 
     private static class ChannelBunch implements Comparable<ChannelBunch> {
         private final int boneIndex;
+        @Nullable
         private InterpolatableChannel<? extends Vector3fc> translationChannel;
+        @Nullable
         private InterpolatableChannel<? extends Vector3fc> rotationChannel;
+        @Nullable
         private InterpolatableChannel<? extends Vector3fc> scaleChannel;
 
         public ChannelBunch(int boneIndex) {

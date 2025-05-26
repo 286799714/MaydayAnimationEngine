@@ -6,6 +6,8 @@ plugins {
 group = 'com.maydaymemory.mae'
 version = '1.0.0'
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
 repositories {
     mavenCentral()
 }

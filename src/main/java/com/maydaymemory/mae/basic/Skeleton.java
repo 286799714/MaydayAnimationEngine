@@ -8,4 +8,6 @@ public interface Skeleton {
     int getFather(int i);
 
     void applyPose(Pose pose);
+
+    void applyAdditivePose(Pose pose);
 }
