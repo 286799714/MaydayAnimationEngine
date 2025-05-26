@@ -7,10 +7,7 @@ import org.joml.Vector3f;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class BlenderTest {
     @Test
@@ -27,8 +24,8 @@ public class BlenderTest {
         BoneTransform boneTransform3 = transformFactory.createBoneTransform(1, translation2, rotation2, scale2);
         BoneTransform boneTransform4 = transformFactory.createBoneTransform(2, translation2, rotation2, scale2);
 
-        ArrayPose arrayPose = new ArrayPose(new ArrayList<>(List.of(boneTransform1, boneTransform2, boneTransform4)));
-        ArrayPose arrayPose1 = new ArrayPose(new ArrayList<>(List.of(boneTransform3)));
+        ArrayPose arrayPose = new ArrayPose(new ArrayList<>(Arrays.asList(boneTransform1, boneTransform2, boneTransform4)));
+        ArrayPose arrayPose1 = new ArrayPose(new ArrayList<>(Collections.singletonList(boneTransform3)));
 
         AdditiveBlender blender = new SimpleAdditiveBlender(transformFactory, LinkedListPoseBuilder::new);
         Pose output = blender.blend(arrayPose1, arrayPose);
@@ -64,8 +61,8 @@ public class BlenderTest {
         BoneTransform boneTransform3 = transformFactory.createBoneTransform(2, translation2, rotation2, scale2);
         BoneTransform boneTransform4 = transformFactory.createBoneTransform(2, translation1, rotation1, scale1);
 
-        ArrayPose arrayPose = new ArrayPose(new ArrayList<>(List.of(boneTransform1, boneTransform2, boneTransform3)));
-        ArrayPose arrayPose1 = new ArrayPose(new ArrayList<>(List.of(boneTransform4)));
+        ArrayPose arrayPose = new ArrayPose(new ArrayList<>(Arrays.asList(boneTransform1, boneTransform2, boneTransform3)));
+        ArrayPose arrayPose1 = new ArrayPose(new ArrayList<>(Collections.singletonList(boneTransform4)));
 
         InterpolatorBlender blender = new SimpleInterpolatorBlender(transformFactory, ArrayPoseBuilder::new);
         float weight = 0.4f;
@@ -99,9 +96,9 @@ public class BlenderTest {
         BoneTransform boneB = transformFactory.createBoneTransform(0, translationB, rotation, scale);
         BoneTransform boneC = transformFactory.createBoneTransform(0, translationC, rotation, scale);
 
-        ArrayPose poseA = new ArrayPose(new ArrayList<>(List.of(boneA)));
-        ArrayPose poseB = new ArrayPose(new ArrayList<>(List.of(boneB)));
-        ArrayPose poseC = new ArrayPose(new ArrayList<>(List.of(boneC)));
+        ArrayPose poseA = new ArrayPose(new ArrayList<>(Collections.singletonList(boneA)));
+        ArrayPose poseB = new ArrayPose(new ArrayList<>(Collections.singletonList(boneB)));
+        ArrayPose poseC = new ArrayPose(new ArrayList<>(Collections.singletonList(boneC)));
 
         // test normal usage
         SimpleBlendSpace1D blendSpace = new SimpleBlendSpace1D(transformFactory, ArrayPoseBuilder::new);
@@ -159,11 +156,11 @@ public class BlenderTest {
         BoneTransform boneD = transformFactory.createBoneTransform(0, translationD, rotation, scale);
         BoneTransform boneE = transformFactory.createBoneTransform(0, translationE, rotation, scale);
 
-        ArrayPose poseA = new ArrayPose(new ArrayList<>(List.of(boneA)));
-        ArrayPose poseB = new ArrayPose(new ArrayList<>(List.of(boneB, boneB2)));
-        ArrayPose poseC = new ArrayPose(new ArrayList<>(List.of(boneC, boneC2)));
-        ArrayPose poseD = new ArrayPose(new ArrayList<>(List.of(boneD)));
-        ArrayPose poseE = new ArrayPose(new ArrayList<>(List.of(boneE)));
+        ArrayPose poseA = new ArrayPose(new ArrayList<>(Collections.singletonList(boneA)));
+        ArrayPose poseB = new ArrayPose(new ArrayList<>(Arrays.asList(boneB, boneB2)));
+        ArrayPose poseC = new ArrayPose(new ArrayList<>(Arrays.asList(boneC, boneC2)));
+        ArrayPose poseD = new ArrayPose(new ArrayList<>(Collections.singletonList(boneD)));
+        ArrayPose poseE = new ArrayPose(new ArrayList<>(Collections.singletonList(boneE)));
 
         ClampToEdgeBlendSpace2D blendSpace = new ClampToEdgeBlendSpace2D(transformFactory, ArrayPoseBuilder::new);
 
@@ -203,9 +200,9 @@ public class BlenderTest {
             @Override
             public Collection<Integer> getDescendantBoneIndices(int rootBoneIndex, int depth) {
                 if (depth == 1) {
-                    return List.of(rootBoneIndex);
+                    return Collections.singletonList(rootBoneIndex);
                 } else {
-                    return rootBoneIndex == 0 ? List.of(0, 1) : List.of(1);
+                    return rootBoneIndex == 0 ? Arrays.asList(0, 1) : Collections.singletonList(1);
                 }
             }
         };
@@ -227,8 +224,8 @@ public class BlenderTest {
         BoneTransform bone3 = transformFactory.createBoneTransform(0, translationC, rotation, scale);
         BoneTransform bone4 = transformFactory.createBoneTransform(1, translationD, rotation, scale);
 
-        ArrayPose poseA = new ArrayPose(new ArrayList<>(List.of(bone1, bone2)));
-        ArrayPose poseB = new ArrayPose(new ArrayList<>(List.of(bone3, bone4)));
+        ArrayPose poseA = new ArrayPose(new ArrayList<>(Arrays.asList(bone1, bone2)));
+        ArrayPose poseB = new ArrayPose(new ArrayList<>(Arrays.asList(bone3, bone4)));
 
         ArrayPose outputPose = (ArrayPose) blender.blend(poseA, poseB, layer);
 
