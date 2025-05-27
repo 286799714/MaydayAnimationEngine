@@ -1,6 +1,7 @@
 package com.maydaymemory.mae.blend;
 
 import com.maydaymemory.mae.basic.*;
+import com.maydaymemory.mae.util.MathUtil;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -77,7 +78,7 @@ public class BlenderTest {
         Quaternionf quaternion2 = new Quaternionf().rotateZYX(rotation2.z, rotation2.y, rotation2.x);
 
         Assertions.assertEquals(translation1.lerp(translation2, weight, new Vector3f()), output.get(2).translation());
-        Assertions.assertEquals(quaternion1.nlerp(quaternion2, weight, new Quaternionf()), output.get(2).rotation().asQuaternion());
+        Assertions.assertEquals(MathUtil.nlerpShortestPath(quaternion1, quaternion2, weight), output.get(2).rotation().asQuaternion());
         Assertions.assertEquals(scale1.lerp(scale2, weight, new Vector3f()), output.get(2).scale());
     }
 

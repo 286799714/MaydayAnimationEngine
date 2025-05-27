@@ -4,7 +4,7 @@ import com.maydaymemory.mae.basic.BoneTransform;
 import com.maydaymemory.mae.basic.BoneTransformFactory;
 import com.maydaymemory.mae.basic.Pose;
 import com.maydaymemory.mae.basic.PoseBuilder;
-import org.joml.Quaternionf;
+import com.maydaymemory.mae.util.MathUtil;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
@@ -35,8 +35,7 @@ public class SimpleInterpolatorBlender implements InterpolatorBlender{
     public static BoneTransform leanerLerpTransforms(BoneTransform baseTransform, BoneTransform inputTransform,
                                                      float weight, int boneIndex, BoneTransformFactory transformFactory) {
         Vector3fc newTranslation = baseTransform.translation().lerp(inputTransform.translation(), weight, new Vector3f());
-        Quaternionfc newRotation = baseTransform.rotation().asQuaternion()
-                .nlerp(inputTransform.rotation().asQuaternion(), weight, new Quaternionf());
+        Quaternionfc newRotation = MathUtil.nlerpShortestPath(baseTransform.rotation().asQuaternion(), inputTransform.rotation().asQuaternion(), weight);
         Vector3fc newScale = baseTransform.scale().lerp(inputTransform.scale(), weight, new Vector3f());
         return transformFactory.createBoneTransform(boneIndex, newTranslation, newRotation, newScale);
     }
