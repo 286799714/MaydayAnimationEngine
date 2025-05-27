@@ -16,6 +16,13 @@ public class ArrayInterpolatableChannel<T>
         assertNotDirty();
         int index = findIndexBefore(timeS, false);
         int indexNext = Math.min(innerList.size() - 1, index + 1);
+        if (index == -1) {
+            if (isEmpty()) {
+                return null;
+            } else {
+                return get(0).getInterpolator().interpolate(this, 0, 0, 0);
+            }
+        }
         InterpolatableKeyframe<T> keyframe = get(index);
         if (index == indexNext) { // only when timeS >= endTimeS
             return keyframe.getInterpolator().interpolate(this, index, index, 0);
