@@ -2,12 +2,23 @@ package com.maydaymemory.mae.basic;
 
 public interface ClipChannel<T> extends AnimationChannel{
     /**
-     * Clip a block of data within a time period and return it in chronological order
+     * Clips the content in the specified time range and returns it in order.
      *
-     * @param fromTimeS the left edge of the time period, inclusive
-     * @param toTimeS the right edge of the time period, not included
-     * @return A traversable container returned in chronological order within the time period
-     * @throws IllegalArgumentException when <code>fromTimeS</code> is bigger than <code>toTimeS</>
+     * <p>
+     * The returned {@code Iterable<T>} contains all elements within the time range
+     * {@code [fromTimeS, toTimeS)}, where:
+     * <ul>
+     *   <li>{@code fromTimeS} is inclusive — elements at exactly {@code fromTimeS} are included.</li>
+     *   <li>{@code toTimeS} is exclusive — elements at exactly {@code toTimeS} are excluded.</li>
+     * </ul>
+     *
+     * <p>
+     * If {@code fromTimeS} &lt; {@code toTimeS}, the results are returned in chronological order.<br>
+     * If {@code fromTimeS} &gt; {@code toTimeS}, the results are returned in reverse chronological order.
+     *
+     * @param fromTimeS the starting point of the time range (inclusive)
+     * @param toTimeS the ending point of the time range (exclusive)
+     * @return an {@code Iterable<T>} representing the clipped content in the specified time range and order
      */
     Iterable<T> clip(float fromTimeS, float toTimeS);
 }

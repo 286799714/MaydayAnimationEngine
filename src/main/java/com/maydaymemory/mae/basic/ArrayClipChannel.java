@@ -19,13 +19,18 @@ public class ArrayClipChannel <T>
         if (fromTimeS == toTimeS) {
             return Collections.emptyList();
         }
+        int indexFrom, indexTo;
         if (fromTimeS > toTimeS) {
-            throw new IllegalArgumentException("fromTimeS > toTimeS");
+            // toTimeS is exclusive in time period, therefore, it should look for the last index in the close interval to its left
+            indexFrom = findIndexBefore(toTimeS, false);
+            // fromTimeS is inclusive in time period, it should look for the last index in the close interval to its left as well.
+            indexTo = findIndexBefore(fromTimeS, false);
+        } else {
+            // fromTimeS is inclusive in time period, therefore, it should look for the last index in the open interval to its left
+            indexFrom = findIndexBefore(fromTimeS, true);
+            // toTimeS is exclusive in time period, it should look for the last index in the open interval to its left as well.
+            indexTo = findIndexBefore(toTimeS, true);
         }
-        // fromTimeS is inclusive in time period, therefore, it should look for the last index in the open interval to its left
-        int indexFrom = findIndexBefore(fromTimeS, true);
-        // toTimeS is not included in time period, it should look for the last index in the open interval to its left as well.
-        int indexTo = findIndexBefore(toTimeS, true);
         if (indexFrom == indexTo) {
             return Collections.emptyList();
         }
@@ -33,8 +38,14 @@ public class ArrayClipChannel <T>
         // and indexTo is smaller than list size. Therefore (indexFrom + 1) must smaller than list size.
         List<Keyframe<T>> subList = subList(indexFrom + 1, indexTo + 1);
         List<T> result = new ArrayList<>(subList.size());
-        for (Keyframe<T> keyframe : subList) {
-            result.add(keyframe.getValue());
+        if (fromTimeS > toTimeS) { // return in reverse order
+            for (int i = subList.size() - 1; i >= 0; i--) {
+                result.add(subList.get(i).getValue());
+            }
+        } else {
+            for (Keyframe<T> keyframe : subList) {
+                result.add(keyframe.getValue());
+            }
         }
         return result;
     }

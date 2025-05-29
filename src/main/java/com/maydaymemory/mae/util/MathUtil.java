@@ -14,4 +14,8 @@ public class MathUtil {
         }
         return q1.nlerp(q2copy, t, q2copy);
     }
+
+    public static float toSecond(long nanos) {
+        return nanos / 1E9f;
+    }
 }

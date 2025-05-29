@@ -6,13 +6,13 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 /**
- * A simple rotation view class that supports ZYX Tait–Bryan angles.
+ * A simple rotation view class that supports YXZ Tait–Bryan angles.
  * <p>
- * It lazily converts between the two representations as needed.
+ * It lazily converts between Euler angles and quaternions as needed.
  */
-public class ZXYRotationView implements RotationView{
+public class YXZRotationView implements RotationView {
     /**
-     * The Euler angles in ZXY order, in radians.
+     * The Euler angles in YXZ order, in radians.
      */
     private Vector3fc angle;
 
@@ -22,36 +22,41 @@ public class ZXYRotationView implements RotationView{
     private Quaternionfc quaternion;
 
     /**
-     * Creates a rotation view from ZXY Euler angles (in radians).
-     * @param angle Euler angles in ZXY order
+     * Creates a rotation view from YXZ Euler angles (in radians).
+     *
+     * @param angle Euler angles in YXZ order
      */
-    public ZXYRotationView(Vector3fc angle) {
+    public YXZRotationView(Vector3fc angle) {
         this.angle = angle;
     }
 
     /**
      * Creates a rotation view from a quaternion.
+     *
      * @param quaternion the quaternion representing the rotation
      */
-    public ZXYRotationView(Quaternionfc quaternion) {
+    public YXZRotationView(Quaternionfc quaternion) {
         this.quaternion = quaternion;
     }
 
     /**
-     * Returns the rotation represented as Euler angles in ZXY order.
+     * Returns the rotation represented as Euler angles in YXZ order.
      * Converts from quaternion if necessary (lazy evaluation).
-     * @return the ZXY Euler angles (in radians)
+     *
+     * @return the YXZ Euler angles (in radians)
      */
     @Override
     public Vector3fc asEulerAngle() {
         if (angle == null) {
-            Vector3f angle = quaternion.getEulerAnglesZXY(new Vector3f());
-            // Solve the Gimbal Lock problem when converting quaternion to Euler angle
-            // Detect pitch ≈ ±90° and fix roll = 0
+            Vector3f angle = quaternion.getEulerAnglesYXZ(new Vector3f());
+
+            // Handle gimbal lock: when pitch ≈ ±90°
             if (Math.abs(angle.x) > Math.PI / 2d - 1E-5d) {
-                angle.y = 2.0f * (float) Math.atan2(quaternion.y(), quaternion.w());
+                // Approximate fix: resolve ambiguity by setting roll to 0
                 angle.z = 0.0f;
+                angle.y = 2.0f * (float) Math.atan2(quaternion.z(), quaternion.w());
             }
+
             this.angle = angle;
         }
         return angle;
@@ -60,12 +65,13 @@ public class ZXYRotationView implements RotationView{
     /**
      * Returns the rotation represented as a quaternion.
      * Converts from Euler angles if necessary (lazy evaluation).
+     *
      * @return the quaternion representing the rotation
      */
     @Override
     public Quaternionfc asQuaternion() {
         if (quaternion == null) {
-            quaternion = new Quaternionf().rotateZ(angle.z()).rotateX(angle.x()).rotateY(angle.y());
+            quaternion = new Quaternionf().rotateYXZ(angle.y(), angle.x(), angle.z());
         }
         return quaternion;
     }
@@ -73,11 +79,12 @@ public class ZXYRotationView implements RotationView{
     @Override
     public String toString() {
         if (angle != null) {
-            return "ZXYRotationView{(radians)" + angle + '}';
+            return "YXZRotationView{(radians)" + angle + '}';
         }
         if (quaternion != null) {
-            return "ZXYRotationView{(radians)=" + asEulerAngle() + '}';
+            return "YXZRotationView{(radians)=" + asEulerAngle() + '}';
         }
         return null;
     }
 }
+

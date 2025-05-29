@@ -5,6 +5,7 @@ import org.joml.Vector3fc;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -17,6 +18,7 @@ public class BasicAnimation implements Animation {
     // inserting tracks will be less efficient, but this usually doesn't need to be efficient,
     // because animations are generally static assets.
     private final ArrayList<ChannelBunch> channels = new ArrayList<>();
+    private final ArrayList<ClipChannel<?>> clipChannels = new ArrayList<>();
 
     private final Supplier<PoseBuilder> poseBuilderSupplier;
     private final BoneTransformFactory transformFactory;
@@ -72,6 +74,34 @@ public class BasicAnimation implements Animation {
             poseBuilder.addBoneTransform(boneTransform);
         }
         return poseBuilder.toPose();
+    }
+
+    @Override
+    public void setClipChannel(int i, ClipChannel<?> channel) {
+        int size = clipChannels.size();
+        if (i == size) {
+            clipChannels.add(channel);
+        } else if (i > size) { // ensure array capability
+            for (int j = i; j > size; j--) {
+                clipChannels.add(null);
+            }
+            clipChannels.add(channel);
+        } else {
+            clipChannels.set(i, channel);
+        }
+    }
+
+    @Override
+    public Collection<Iterable<?>> clip(float fromTimeS, float toTimeS) {
+        ArrayList<Iterable<?>> results = new ArrayList<>(clipChannels.size());
+        for (ClipChannel<?> clipChannel : clipChannels) {
+            if (clipChannel != null) {
+                results.add(clipChannel.clip(fromTimeS, toTimeS));
+            } else {
+                results.add(null);
+            }
+        }
+        return results;
     }
 
     @Override
