@@ -13,7 +13,7 @@ public interface IAnimationContext {
     long getMaxProgress();
     void setMaxProgress(long maxProgress);
     void enqueueClipPlan(LongLongImmutablePair plan);
-    @Nullable LongLongImmutablePair popClipPlan();
+    @Nullable LongLongImmutablePair pollClipPlan();
     void setState(@Nonnull AnimationState state);
     void update();
 }

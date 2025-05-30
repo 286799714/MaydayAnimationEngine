@@ -58,7 +58,7 @@ public class AnimationContext implements IAnimationContext{
 
     @Nullable
     @Override
-    public LongLongImmutablePair popClipPlan() {
+    public LongLongImmutablePair pollClipPlan() {
         return clipPlanQueue.poll();
     }
 
@@ -69,6 +69,7 @@ public class AnimationContext implements IAnimationContext{
 
     @Override
     public void update() {
+        clipPlanQueue.clear();
         state = state.update(this);
     }
 }

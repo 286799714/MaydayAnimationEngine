@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -92,7 +93,7 @@ public class BasicAnimation implements Animation {
     }
 
     @Override
-    public Collection<Iterable<?>> clip(float fromTimeS, float toTimeS) {
+    public List<Iterable<?>> clip(float fromTimeS, float toTimeS) {
         ArrayList<Iterable<?>> results = new ArrayList<>(clipChannels.size());
         for (ClipChannel<?> clipChannel : clipChannels) {
             if (clipChannel != null) {

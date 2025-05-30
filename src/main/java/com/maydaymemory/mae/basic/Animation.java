@@ -3,7 +3,7 @@ package com.maydaymemory.mae.basic;
 import org.joml.Vector3fc;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
+import java.util.List;
 
 public interface Animation {
     /**
@@ -76,7 +76,7 @@ public interface Animation {
      *         If no channel is set at an index, the result at that index will be {@code null}.
      * @see ClipChannel#clip(float, float)
      */
-    Collection<Iterable<?>> clip(float fromTimeS, float toTimeS);
+    List<Iterable<?>> clip(float fromTimeS, float toTimeS);
 
     /**
      * Returns the end time of the animation.
