@@ -1,7 +1,5 @@
 package com.maydaymemory.mae.util.triangulation;
 
-import java.util.Objects;
-
 /**
  * Constructor of the edge distance pack class used to create a new edge
  * distance pack instance from a 2D edge and a scalar value describing a

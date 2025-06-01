@@ -1,7 +1,8 @@
 package com.maydaymemory.mae.blend;
 
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
-import it.unimi.dsi.fastutil.ints.*;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 
 import java.util.Collection;
 

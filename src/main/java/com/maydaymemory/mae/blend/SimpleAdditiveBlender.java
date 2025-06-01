@@ -1,6 +1,8 @@
 package com.maydaymemory.mae.blend;
 
-import com.maydaymemory.mae.basic.*;
+import com.maydaymemory.mae.basic.BoneTransformFactory;
+import com.maydaymemory.mae.basic.Pose;
+import com.maydaymemory.mae.basic.PoseBuilder;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 

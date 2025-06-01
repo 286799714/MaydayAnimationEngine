@@ -3,7 +3,6 @@ package com.maydaymemory.mae.blend;
 import com.maydaymemory.mae.basic.*;
 import com.maydaymemory.mae.util.MathUtil;
 import org.joml.Quaternionf;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
