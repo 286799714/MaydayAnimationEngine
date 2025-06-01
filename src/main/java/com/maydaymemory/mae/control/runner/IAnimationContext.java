@@ -14,5 +14,6 @@ public interface IAnimationContext {
     void enqueueClipPlan(LongLongImmutablePair plan);
     @Nullable LongLongImmutablePair pollClipPlan();
     void setState(@Nonnull IAnimationState state);
+    boolean isEnd();
     void update();
 }

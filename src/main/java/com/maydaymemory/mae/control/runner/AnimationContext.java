@@ -67,6 +67,11 @@ public class AnimationContext implements IAnimationContext {
     }
 
     @Override
+    public boolean isEnd() {
+        return state.isEndPoint();
+    }
+
+    @Override
     public void update() {
         clipPlanQueue.clear();
         IAnimationState state = this.state.update(this);
