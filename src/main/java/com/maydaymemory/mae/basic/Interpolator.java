@@ -7,6 +7,7 @@ public interface Interpolator<T> {
      * Get the priority of the current interpolator. When interpolating between two keyframes,
      * each keyframe specifies an interpolator, and the one with the higher priority will be used first.
      * If the priorities are equal, the interpolator of the earlier keyframe will be used
+     *
      * @return the priority of interpolator.
      */
     Priority getPriority();

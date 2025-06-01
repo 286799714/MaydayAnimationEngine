@@ -24,15 +24,16 @@ public class ClampToEdgeBlendSpace2D implements BlendSpace2D {
         this.poseBuilderSupplier = poseBuilderSupplier;
     }
 
-    public void setSamplerPosition(int index, Vector2fc position) {
+    @Override
+    public void setSamplerPosition(int index, float x, float y) {
         if (triangulator != null) {
             throw new IllegalStateException("This Blend Space 2D has been triangulated.");
         }
         pointMap.compute(index, (i, point) -> {
             if (point != null) {
-                point.setPosition(position);
+                point.setPosition(new Vector2f(x, y));
             } else {
-                point = new MySamplerPoint(position);
+                point = new MySamplerPoint(new Vector2f(x, y));
             }
             return point;
         });

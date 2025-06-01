@@ -1,5 +1,7 @@
-package com.maydaymemory.mae.control;
+package com.maydaymemory.mae.control.runner;
 
+import com.maydaymemory.mae.basic.Animation;
+import com.maydaymemory.mae.util.MathUtil;
 import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
 
 import javax.annotation.Nonnull;
@@ -7,15 +9,17 @@ import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class AnimationContext implements IAnimationContext{
+public class AnimationContext implements IAnimationContext {
     private long progress;
     private long lastUpdateTime;
-    private long maxProgress;
-    private AnimationState state;
+    private final long maxProgress;
+    private IAnimationState state;
     private final Queue<LongLongImmutablePair> clipPlanQueue = new LinkedList<>();
 
-    public AnimationContext(AnimationState state) {
+    public AnimationContext(IAnimationState state, long maxProgress) {
         this.state = state;
+        this.maxProgress = maxProgress;
+        state.onEnter(this);
     }
 
     @Override
@@ -44,14 +48,6 @@ public class AnimationContext implements IAnimationContext{
     }
 
     @Override
-    public void setMaxProgress(long maxProgress) {
-        if (maxProgress < 0) {
-            throw new IllegalArgumentException("maxProgress must be a positive number");
-        }
-        this.maxProgress = maxProgress;
-    }
-
-    @Override
     public void enqueueClipPlan(LongLongImmutablePair plan) {
         clipPlanQueue.offer(plan);
     }
@@ -63,13 +59,24 @@ public class AnimationContext implements IAnimationContext{
     }
 
     @Override
-    public void setState(@Nonnull AnimationState state) {
-        this.state = state;
+    public void setState(@Nonnull IAnimationState state) {
+        if (this.state != state) {
+            this.state = state;
+            state.onEnter(this);
+        }
     }
 
     @Override
     public void update() {
         clipPlanQueue.clear();
-        state = state.update(this);
+        IAnimationState state = this.state.update(this);
+        if (this.state != state) {
+            this.state = state;
+            state.onEnter(this);
+        }
+    }
+
+    public static AnimationContext createWithAnimation(Animation animation, IAnimationState initialState) {
+        return new AnimationContext(initialState, MathUtil.toNanos(animation.getEndTimeS()));
     }
 }

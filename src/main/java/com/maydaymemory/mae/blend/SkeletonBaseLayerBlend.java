@@ -89,6 +89,15 @@ public class SkeletonBaseLayerBlend implements LayerBlend{
         controlPoints.set(controlPointIndex, weight);
     }
 
+    /**
+     * Get the number of control points.
+     *
+     * @return the number of control points.
+     */
+    public int getControlPointNumber() {
+        return controlPoints.size();
+    }
+
     @Override
     public float getWeight(int boneIndex) {
         IntArraySet points = controlBy.get(boneIndex);

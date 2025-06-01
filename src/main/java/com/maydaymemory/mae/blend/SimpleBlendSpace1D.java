@@ -48,6 +48,7 @@ public class SimpleBlendSpace1D implements BlendSpace1D {
         }
     }
 
+    @Override
     public void setSamplerPosition(int index, float position) {
         pointMap.compute(index, (i, oldPoint) -> {
             SamplerPoint newPoint = new SamplerPoint(position);

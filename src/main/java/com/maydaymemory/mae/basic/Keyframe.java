@@ -16,6 +16,7 @@ public interface Keyframe<T> extends Comparable<Keyframe<T>>{
 
     /**
      * Get the value of this keyframe.
+     *
      * @return the value of this keyframe.
      */
     T getValue();

@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+/**
+ * A useful tool to combine two poses into one.
+ */
 public class BiPoseCombiner {
     private final Supplier<PoseBuilder> poseBuilderSupplier;
 

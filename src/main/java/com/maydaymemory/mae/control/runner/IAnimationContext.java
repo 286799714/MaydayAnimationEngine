@@ -1,4 +1,4 @@
-package com.maydaymemory.mae.control;
+package com.maydaymemory.mae.control.runner;
 
 import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
 
@@ -11,9 +11,8 @@ public interface IAnimationContext {
     long getLastUpdateTime();
     void setLastUpdateTime(long lastUpdateTime);
     long getMaxProgress();
-    void setMaxProgress(long maxProgress);
     void enqueueClipPlan(LongLongImmutablePair plan);
     @Nullable LongLongImmutablePair pollClipPlan();
-    void setState(@Nonnull AnimationState state);
+    void setState(@Nonnull IAnimationState state);
     void update();
 }

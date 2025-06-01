@@ -5,7 +5,6 @@ import org.joml.Vector3fc;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -90,6 +89,7 @@ public class BasicAnimation implements Animation {
         } else {
             clipChannels.set(i, channel);
         }
+        endTimeS = -1;
     }
 
     @Override
@@ -118,6 +118,11 @@ public class BasicAnimation implements Animation {
                 }
                 if (channelBunch.scaleChannel != null) {
                     endTimeS = Math.max(channelBunch.scaleChannel.getEndTimeS(), endTimeS);
+                }
+            }
+            for (ClipChannel<?> channel : clipChannels) {
+                if (channel != null) {
+                    endTimeS = Math.max(channel.getEndTimeS(), endTimeS);
                 }
             }
         }

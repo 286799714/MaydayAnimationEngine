@@ -167,11 +167,11 @@ public class BlenderTest {
 
         blendSpace.setSamplerPose(0, poseA);
 
-        blendSpace.setSamplerPosition(0, new Vector2f(0, 0));
-        blendSpace.setSamplerPosition(1, new Vector2f(0, 1));
-        blendSpace.setSamplerPosition(2, new Vector2f(1, 0));
-        blendSpace.setSamplerPosition(3, new Vector2f(0, -1));
-        blendSpace.setSamplerPosition(4, new Vector2f(-1, 0));
+        blendSpace.setSamplerPosition(0, 0, 0);
+        blendSpace.setSamplerPosition(1, 0, 1);
+        blendSpace.setSamplerPosition(2, 1, 0);
+        blendSpace.setSamplerPosition(3, 0, -1);
+        blendSpace.setSamplerPosition(4, -1, 0);
 
         blendSpace.setSamplerPose(1, poseB);
 

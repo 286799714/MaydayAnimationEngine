@@ -1,9 +1,9 @@
-package com.maydaymemory.mae.control;
+package com.maydaymemory.mae.control.runner;
 
 import com.maydaymemory.mae.util.LongSupplier;
 import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
 
-public class LoopingState implements AnimationState{
+public class LoopingState implements IAnimationState {
     private final LongSupplier currentNanosSupplier;
     private float speed = 1f;
 
@@ -20,7 +20,7 @@ public class LoopingState implements AnimationState{
     }
 
     @Override
-    public AnimationState update(IAnimationContext ctx) {
+    public IAnimationState update(IAnimationContext ctx) {
         long currentNanos = currentNanosSupplier.getAsLong();
         long maxProgress = ctx.getMaxProgress();
         if (maxProgress == 0) {
@@ -53,5 +53,15 @@ public class LoopingState implements AnimationState{
         ctx.setProgress(progress);
         ctx.setLastUpdateTime(currentNanos);
         return this;
+    }
+
+    @Override
+    public void onEnter(IAnimationContext ctx) {
+        ctx.setLastUpdateTime(currentNanosSupplier.getAsLong());
+    }
+
+    @Override
+    public boolean isEndPoint() {
+        return false;
     }
 }

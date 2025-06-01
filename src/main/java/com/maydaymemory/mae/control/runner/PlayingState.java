@@ -1,14 +1,18 @@
-package com.maydaymemory.mae.control;
+package com.maydaymemory.mae.control.runner;
 
 import com.maydaymemory.mae.util.LongSupplier;
 import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
 
-public class PlayingState implements AnimationState{
+import java.util.function.Supplier;
+
+public class PlayingState implements IAnimationState {
     private final LongSupplier currentNanosSupplier;
+    private final Supplier<IAnimationState> finishingStateSupplier;
     private float speed = 1f;
 
-    public PlayingState(final LongSupplier currentNanosSupplier) {
+    public PlayingState(LongSupplier currentNanosSupplier, Supplier<IAnimationState> finishingStateSupplier) {
         this.currentNanosSupplier = currentNanosSupplier;
+        this.finishingStateSupplier = finishingStateSupplier;
     }
 
     public float getSpeed() {
@@ -20,7 +24,7 @@ public class PlayingState implements AnimationState{
     }
 
     @Override
-    public AnimationState update(IAnimationContext ctx) {
+    public IAnimationState update(IAnimationContext ctx) {
         long currentNanos = currentNanosSupplier.getAsLong();
         long alpha = (long) ((currentNanos - ctx.getLastUpdateTime()) * speed);
         long progress = ctx.getProgress() + alpha;
@@ -40,9 +44,19 @@ public class PlayingState implements AnimationState{
         ctx.setLastUpdateTime(currentNanos);
 
         if (flag) {
-            return new PauseState(currentNanosSupplier);
+            return finishingStateSupplier.get();
         } else {
             return this;
         }
+    }
+
+    @Override
+    public void onEnter(IAnimationContext ctx) {
+        ctx.setLastUpdateTime(currentNanosSupplier.getAsLong());
+    }
+
+    @Override
+    public boolean isEndPoint() {
+        return false;
     }
 }

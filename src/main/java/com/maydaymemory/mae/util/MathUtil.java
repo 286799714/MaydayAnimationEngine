@@ -18,4 +18,8 @@ public class MathUtil {
     public static float toSecond(long nanos) {
         return nanos / 1E9f;
     }
+
+    public static long toNanos(float second) {
+        return (long) (second * 1E9d);
+    }
 }
