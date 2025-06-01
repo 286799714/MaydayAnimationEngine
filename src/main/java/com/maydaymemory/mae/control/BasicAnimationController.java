@@ -5,7 +5,7 @@ import com.maydaymemory.mae.basic.Pose;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-public class SimpleArrayPoseProcessorSequence implements PoseProcessorSequence {
+public class BasicAnimationController implements PoseProcessorSequence, Tickable {
     private final ArrayList<PoseProcessor> array = new ArrayList<>();
 
     @Override
@@ -34,5 +34,14 @@ public class SimpleArrayPoseProcessorSequence implements PoseProcessorSequence {
             return null;
         }
         return processor.process(this);
+    }
+
+    @Override
+    public void tick() {
+        for (PoseProcessor processor : array) {
+            if (processor instanceof Tickable) {
+                ((Tickable) processor).tick();
+            }
+        }
     }
 }
