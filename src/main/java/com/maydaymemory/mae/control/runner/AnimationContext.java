@@ -1,10 +1,7 @@
 package com.maydaymemory.mae.control.runner;
 
-import com.maydaymemory.mae.basic.Animation;
-import com.maydaymemory.mae.util.MathUtil;
 import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -16,10 +13,8 @@ public class AnimationContext implements IAnimationContext {
     private IAnimationState state;
     private final Queue<LongLongImmutablePair> clipPlanQueue = new LinkedList<>();
 
-    public AnimationContext(IAnimationState state, long maxProgress) {
-        this.state = state;
+    public AnimationContext(long maxProgress) {
         this.maxProgress = maxProgress;
-        state.onEnter(this);
     }
 
     @Override
@@ -59,29 +54,28 @@ public class AnimationContext implements IAnimationContext {
     }
 
     @Override
-    public void setState(@Nonnull IAnimationState state) {
+    public void setState(IAnimationState state) {
         if (this.state != state) {
             this.state = state;
-            state.onEnter(this);
+            if (state != null) {
+                state.onEnter(this);
+            }
         }
     }
 
     @Override
     public boolean isEnd() {
+        if (state == null) {
+            return true;
+        }
         return state.isEndPoint();
     }
 
     @Override
     public void update() {
         clipPlanQueue.clear();
-        IAnimationState state = this.state.update(this);
-        if (this.state != state) {
-            this.state = state;
-            state.onEnter(this);
+        if (state != null) {
+            setState(state.update(this));
         }
-    }
-
-    public static AnimationContext createWithAnimation(Animation animation, IAnimationState initialState) {
-        return new AnimationContext(initialState, MathUtil.toNanos(animation.getEndTimeS()));
     }
 }

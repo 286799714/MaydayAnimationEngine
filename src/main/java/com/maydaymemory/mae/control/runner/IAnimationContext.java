@@ -2,7 +2,6 @@ package com.maydaymemory.mae.control.runner;
 
 import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface IAnimationContext {
@@ -13,7 +12,7 @@ public interface IAnimationContext {
     long getMaxProgress();
     void enqueueClipPlan(LongLongImmutablePair plan);
     @Nullable LongLongImmutablePair pollClipPlan();
-    void setState(@Nonnull IAnimationState state);
+    void setState(IAnimationState state);
     boolean isEnd();
     void update();
 }
