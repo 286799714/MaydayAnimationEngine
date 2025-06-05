@@ -58,10 +58,10 @@ public class XYZRotationView implements RotationView {
             // Handle gimbal lock: when pitch ≈ ±90°
             if (angle.y > Math.PI / 2d - 1E-5d) {
                 angle.z = 0.0f;
-                angle.x = 2.0f * (float) Math.atan2(z, w);
+                angle.x = -2.0f * (float) Math.atan2(z, w);
             } else if (angle.y < -(Math.PI / 2d - 1E-5d)) {
                 angle.z = 0.0f;
-                angle.x = -2.0f * (float) Math.atan2(z, w);
+                angle.x = 2.0f * (float) Math.atan2(z, w);
             } else {
                 angle.z = (float) Math.atan2(z * w - x * y, 0.5f - y * y - z * z);
                 angle.x = (float) Math.atan2(x * w - y * z, 0.5f - x * x - y * y);
