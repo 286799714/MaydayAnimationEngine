@@ -45,13 +45,25 @@ public class ZXYRotationView implements RotationView{
     @Override
     public Vector3fc asEulerAngle() {
         if (angle == null) {
-            Vector3f angle = quaternion.getEulerAnglesZXY(new Vector3f());
-            // Solve the Gimbal Lock problem when converting quaternion to Euler angle
-            // Detect pitch ≈ ±90° and fix roll = 0
-            if (Math.abs(angle.x) > Math.PI / 2d - 1E-5d) {
-                angle.y = 2.0f * (float) Math.atan2(quaternion.y(), quaternion.w());
+            Vector3f angle = new Vector3f();
+            float x = quaternion.x();
+            float y = quaternion.y();
+            float z = quaternion.z();
+            float w = quaternion.w();
+            angle.x = org.joml.Math.safeAsin(2.0f * (w * x + y * z));
+
+            // Handle gimbal lock: when pitch ≈ ±90°
+            if (angle.x > Math.PI / 2d - 1E-5d) {
+                angle.y = 2.0f * (float) Math.atan2(y, w);
                 angle.z = 0.0f;
+            } else if (angle.x < -(Math.PI / 2d - 1E-5d)) {
+                angle.y = -2.0f * (float) Math.atan2(y, w);
+                angle.z = 0.0f;
+            } else {
+                angle.y = (float) Math.atan2(w * y - x * z, 0.5f - y * y - x * x);
+                angle.z = (float) Math.atan2(w * z - x * y, 0.5f - z * z - x * x);
             }
+
             this.angle = angle;
         }
         return angle;

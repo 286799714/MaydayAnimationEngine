@@ -48,13 +48,23 @@ public class YXZRotationView implements RotationView {
     @Override
     public Vector3fc asEulerAngle() {
         if (angle == null) {
-            Vector3f angle = quaternion.getEulerAnglesYXZ(new Vector3f());
+            Vector3f angle = new Vector3f();
+            float x = quaternion.x();
+            float y = quaternion.y();
+            float z = quaternion.z();
+            float w = quaternion.w();
+            angle.x = org.joml.Math.safeAsin(-2.0f * (y * z - w * x));
 
             // Handle gimbal lock: when pitch ≈ ±90°
-            if (Math.abs(angle.x) > Math.PI / 2d - 1E-5d) {
-                // Approximate fix: resolve ambiguity by setting roll to 0
+            if (angle.x > Math.PI / 2d - 1E-5d) {
                 angle.z = 0.0f;
-                angle.y = 2.0f * (float) Math.atan2(quaternion.z(), quaternion.w());
+                angle.y = 2.0f * (float) Math.atan2(z, w);
+            } else if (angle.x < -(Math.PI / 2d - 1E-5d)) {
+                angle.z = 0.0f;
+                angle.y = -2.0f * (float) Math.atan2(z, w);
+            } else {
+                angle.z = (float) Math.atan2(y * x + w * z, 0.5f - x * x - z * z);
+                angle.y = (float) Math.atan2(x * z + y * w, 0.5f - y * y - x * x);
             }
 
             this.angle = angle;
