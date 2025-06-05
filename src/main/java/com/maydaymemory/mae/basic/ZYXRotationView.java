@@ -54,10 +54,10 @@ public class ZYXRotationView implements RotationView {
             angle.y = org.joml.Math.safeAsin(-2.0f * (x * z - w * y));
 
             // Handle gimbal lock: when pitch ≈ ±90°
-            if (angle.y > Math.PI / 2d - 1E-5d) {
+            if (angle.y > Math.PI / 2d - 1e-3) {
                 angle.z = -2.0f * (float) Math.atan2(x, w);
                 angle.x = 0.0f;
-            } else if (angle.y < -(Math.PI / 2d - 1E-5d)) {
+            } else if (angle.y < -(Math.PI / 2d - 1e-3)) {
                 angle.z = 2.0f * (float) Math.atan2(x, w);
                 angle.x = 0.0f;
             } else {
