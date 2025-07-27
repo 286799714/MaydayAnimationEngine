@@ -19,6 +19,7 @@ public class BasicAnimation implements Animation {
     // because animations are generally static assets.
     private final ArrayList<ChannelBunch> channels = new ArrayList<>();
     private final ArrayList<ClipChannel<?>> clipChannels = new ArrayList<>();
+    private final ArrayList<InterpolatableChannel<?>> curves = new ArrayList<>();
 
     private final Supplier<PoseBuilder> poseBuilderSupplier;
     private final BoneTransformFactory transformFactory;
@@ -41,22 +42,22 @@ public class BasicAnimation implements Animation {
     }
 
     @Override
-    public void setTranslationChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
-        getOrCreateChannelBunchAnd(i, channelBunch -> channelBunch.translationChannel = channel);
+    public void setTranslationChannel(int boneIndex, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
+        getOrCreateChannelBunchAnd(boneIndex, channelBunch -> channelBunch.translationChannel = channel);
         // Mark end time as dirty, when getting,
         // all channels will be traversed again to calculate the new endTime and then cache it
         endTimeS = -1;
     }
 
     @Override
-    public void setScaleChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
-        getOrCreateChannelBunchAnd(i, channelBunch -> channelBunch.scaleChannel = channel);
+    public void setScaleChannel(int boneIndex, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
+        getOrCreateChannelBunchAnd(boneIndex, channelBunch -> channelBunch.scaleChannel = channel);
         endTimeS = -1;
     }
 
     @Override
-    public void setRotationChannel(int i, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
-        getOrCreateChannelBunchAnd(i, channelBunch -> channelBunch.rotationChannel = channel);
+    public void setRotationChannel(int boneIndex, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
+        getOrCreateChannelBunchAnd(boneIndex, channelBunch -> channelBunch.rotationChannel = channel);
         endTimeS = -1;
     }
 
@@ -105,6 +106,61 @@ public class BasicAnimation implements Animation {
         return results;
     }
 
+    @Nullable
+    @Override
+    public Iterable<?> clip(int i, float fromTimeS, float toTimeS) {
+        if (i > clipChannels.size() || i < 0) {
+            return null;
+        }
+        ClipChannel<?> channel = clipChannels.get(i);
+        if (channel != null) {
+            return channel.clip(fromTimeS, toTimeS);
+        }
+        return null;
+    }
+
+    @Override
+    public void setCurve(int i, @Nullable InterpolatableChannel<?> curve) {
+        int size = curves.size();
+        if (i == size) {
+            curves.add(curve);
+        } else if (i > size) { // ensure array capability
+            for (int j = i; j > size; j--) {
+                curves.add(null);
+            }
+            curves.add(curve);
+        } else {
+            curves.set(i, curve);
+        }
+        endTimeS = -1;
+    }
+
+    @Override
+    public List<Object> evaluateCurve(float timeS) {
+        ArrayList<Object> results = new ArrayList<>(curves.size());
+        for (InterpolatableChannel<?> curve : curves) {
+            if (curve != null) {
+                results.add(curve.compute(timeS));
+            } else {
+                results.add(null);
+            }
+        }
+        return results;
+    }
+
+    @Nullable
+    @Override
+    public Object evaluateCurve(int i, float timeS) {
+        if (i > curves.size() || i < 0) {
+            return null;
+        }
+        InterpolatableChannel<?> curve = curves.get(i);
+        if (curve != null) {
+            return curve.compute(timeS);
+        }
+        return null;
+    }
+
     @Override
     public float getEndTimeS() {
         if (endTimeS == -1) {
@@ -121,6 +177,11 @@ public class BasicAnimation implements Animation {
                 }
             }
             for (ClipChannel<?> channel : clipChannels) {
+                if (channel != null) {
+                    endTimeS = Math.max(channel.getEndTimeS(), endTimeS);
+                }
+            }
+            for (InterpolatableChannel<?> channel : curves) {
                 if (channel != null) {
                     endTimeS = Math.max(channel.getEndTimeS(), endTimeS);
                 }

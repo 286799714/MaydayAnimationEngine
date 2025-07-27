@@ -2,13 +2,25 @@ package com.maydaymemory.mae.basic;
 
 import java.util.ArrayList;
 
+/**
+ * A builder implementation for creating ArrayPose instances.
+ * This builder enforces strictly ascending bone indices and is single-use.
+ */
 public class ArrayPoseBuilder implements PoseBuilder {
     private ArrayList<BoneTransform> list;
 
+    /**
+     * Constructs a new ArrayPoseBuilder with default capacity.
+     */
     public ArrayPoseBuilder() {
         list = new ArrayList<>();
     }
 
+    /**
+     * Constructs a new ArrayPoseBuilder with the specified initial capacity.
+     *
+     * @param initialCapacity the initial capacity of the builder
+     */
     public ArrayPoseBuilder(int initialCapacity) {
         list = new ArrayList<>(initialCapacity);
     }

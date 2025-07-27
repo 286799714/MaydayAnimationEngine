@@ -6,6 +6,10 @@ import com.maydaymemory.mae.basic.PoseBuilder;
 
 import java.util.function.Supplier;
 
+/**
+ * A simple implementation of LayeredBlender that blends two poses using per-bone weights.
+ * The blending weight for each bone is provided by a LayerBlend instance.
+ */
 public class SimpleLayeredBlender implements LayeredBlender{
     private final BiPoseCombiner combiner;
     private final BoneTransformFactory transformFactory;

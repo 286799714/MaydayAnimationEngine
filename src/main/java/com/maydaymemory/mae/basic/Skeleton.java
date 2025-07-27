@@ -35,6 +35,13 @@ public interface Skeleton {
     void applyPose(Pose pose);
 
     /**
+     * Returns the current pose of the skeleton.
+     *
+     * @return the current pose of the skeleton
+     */
+    Pose getPose();
+
+    /**
      * Returns the bind pose of the skeleton.
      * <p>
      * The bind pose, also known as the rest pose or T-pose, represents the default,

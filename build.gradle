@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.maydaymemory.mae'
-version = '1.0.0'
+version = '1.0.1'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -28,15 +28,15 @@ dependencies {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.java // Java 项目使用这个
+            from components.java
 
-            groupId = 'com.maydaymemory'    // 自定义 groupId
-            artifactId = "mae"  // 自定义 artifactId
-            version = '1.0.0'          // 自定义版本号
+            groupId = 'com.maydaymemory'
+            artifactId = "mae"
+            version = project.version
         }
     }
 
     repositories {
-        mavenLocal() // 发布到 ~/.m2/repository
+        mavenLocal() // ~/.m2/repository
     }
 }

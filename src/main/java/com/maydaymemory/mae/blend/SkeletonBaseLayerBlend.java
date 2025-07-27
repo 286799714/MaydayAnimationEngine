@@ -6,6 +6,11 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 
 import java.util.Collection;
 
+/**
+ * An implementation of LayerBlend for skeletons, allowing control points to define blending weights
+ * for bones and their descendants up to a specified depth.
+ * Useful for layered animation blending where different parts of the skeleton are controlled independently.
+ */
 public class SkeletonBaseLayerBlend implements LayerBlend{
     private final SkeletonDescendantAccessor skeleton;
     private final FloatArrayList controlPoints = new FloatArrayList();

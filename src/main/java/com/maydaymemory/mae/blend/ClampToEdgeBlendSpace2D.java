@@ -12,6 +12,15 @@ import java.lang.Math;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
+/**
+ * An implementation of BlendSpace2D that uses Delaunay triangulation to interpolate between sample poses.
+ * When the input position is outside the convex hull of sample points, the blend result is clamped to the nearest edge.
+ *
+ * <p>Typical usage: blending walk animations based on player velocity (see BlendSpace2D for example).</p>
+ *
+ * <b>Important:</b> You <b>must</b> call {@link #triangulate()} after setting all sample points and before calling {@link #blend(float, float)}.
+ * Failing to do so will result in an {@link IllegalStateException}.
+ */
 public class ClampToEdgeBlendSpace2D implements BlendSpace2D {
     private DelaunayTriangulator<MySamplerPoint> triangulator;
     private final Int2ObjectOpenHashMap<MySamplerPoint> pointMap = new Int2ObjectOpenHashMap<>();
@@ -24,6 +33,15 @@ public class ClampToEdgeBlendSpace2D implements BlendSpace2D {
         this.poseBuilderSupplier = poseBuilderSupplier;
     }
 
+    /**
+     * Sets the position of a sample point at the given index.
+     * Throws an exception if the blend space has already been triangulated.
+     *
+     * @param index the index of the sample point
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @throws IllegalStateException if triangulation has already occurred
+     */
     @Override
     public void setSamplerPosition(int index, float x, float y) {
         if (triangulator != null) {
@@ -39,6 +57,12 @@ public class ClampToEdgeBlendSpace2D implements BlendSpace2D {
         });
     }
 
+    /**
+     * Triangulates the sample points using Delaunay triangulation.
+     * Must be called before blending. Throws if not enough points.
+     *
+     * @throws IllegalStateException if already triangulated or not enough points(at least 3)
+     */
     public void triangulate() {
         if (triangulator != null) {
             throw new IllegalStateException("This Blend Space 2D has been triangulated.");
@@ -52,6 +76,12 @@ public class ClampToEdgeBlendSpace2D implements BlendSpace2D {
         }
     }
 
+    /**
+     * Sets the pose for a sample point at the given index.
+     *
+     * @param index the index of the sample point
+     * @param pose the pose to assign
+     */
     @Override
     public void setSamplerPose(int index, Pose pose) {
         pointMap.compute(index, (i, point) -> {
@@ -63,6 +93,15 @@ public class ClampToEdgeBlendSpace2D implements BlendSpace2D {
         });
     }
 
+    /**
+     * Blends poses based on the input (x, y) position.
+     * If the input is outside the convex hull, the result is clamped to the nearest edge.
+     *
+     * @param x the X coordinate of the blend input
+     * @param y the Y coordinate of the blend input
+     * @return the blended pose
+     * @throws IllegalStateException if triangulation has not been performed
+     */
     @Override
     public Pose blend(float x, float y) {
         if (triangulator == null) {

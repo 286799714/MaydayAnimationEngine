@@ -8,6 +8,10 @@ import org.joml.Vector3fc;
 
 import java.util.function.Supplier;
 
+/**
+ * A simple implementation of AdditiveBlender that combines two poses using addition for translation and rotation (Euler angles),
+ * and multiplication for scale. Used for basic additive animation blending.
+ */
 public class SimpleAdditiveBlender implements AdditiveBlender{
     private final BoneTransformFactory boneTransformFactory;
     private final BiPoseCombiner combiner;
