@@ -2,6 +2,8 @@ package com.maydaymemory.mae.blend;
 
 import com.maydaymemory.mae.basic.RotationView;
 import com.maydaymemory.mae.basic.Pose;
+import com.maydaymemory.mae.control.misc.AnimationVelocityEstimatorNode;
+import com.maydaymemory.mae.control.misc.RealtimeVelocityEstimatorNode;
 
 public interface KinematicInterpolatorBlender {
     /**
@@ -14,35 +16,28 @@ public interface KinematicInterpolatorBlender {
      * <p>The goal of this method is to produce a smooth interpolated pose that accounts for both position and velocity-like contributions
      * from both ends, providing smoother transitions than standard linear or spherical interpolation. </p>
      *
-     * <ul>
-     *     <li>{@code base}: The starting pose of the transition. Represents the initial position, rotation, and scale of each bone.</li>
-     *     <li>{@code deltaBaseContribution}: The total contribution of the initial velocity over the entire transition duration. It is a pose whose translation, rotation (as a rotation vector), and scale components represent the velocity at {@code base} scaled by total transition time.</li>
-     *     <li>{@code target}: The target pose at the end of the transition. Represents the desired final transform of each bone.</li>
-     *     <li>{@code deltaTargetContribution}: The total contribution of the final velocity over the entire transition duration. Analogous to {@code deltaBaseContribution}, but relative to {@code target}.</li>
-     *     <li>{@code weight}: A scalar in [0, 1] representing normalized transition progress. {@code weight = 0} corresponds to {@code base}, and {@code weight = 1} corresponds to {@code target}.</li>
-     * </ul>
-     *
      * <p>
      *  <b>Notes:</b>
      *  <ul>
      *    <li>Rotation in {@code base} pose and {@code target} pose transform must be <b>unit quaternion</b>.
      *        In other words, you need to make sure that the result returned by {@link RotationView#asQuaternion()} is a unit quaternion.
      *        This is usually only necessary when you initialize {@link RotationView} with your own quaternion instance.</li>
-     *    <li>Rotation in {@code deltaBaseContribution} pose and {@code deltaTargetContribution} pose is
+     *    <li>Rotation in {@code baseVelocity} pose and {@code targetVelocity} pose is
      *        obtained through {@link RotationView#asEulerAngle()}, but their mathematical meaning is pure imaginary quaternion,
-     *        that is, the quaternion is mapped to the rotation vector of Euclidean space through log operation.</li>
+     *        that is, the quaternion is mapped to the rotation vector of Euclidean space through log operation.
+     *        You can use {@link com.maydaymemory.mae.basic.RotationVelocityRotationView RotationVelocityRotationView} to conveniently express</li>
      *  </ul>
      * </p>
      *
      * @param base the starting pose.
-     * @param deltaBaseContribution the velocity (or motion derivative) contribution at the starting pose.
+     * @param baseVelocity the velocity at the starting pose. The time unit of speed must also be the same as {@code duration} and {@code time}
      * @param target the ending pose.
-     * @param deltaTargetContribution the velocity (or motion derivative) contribution at the ending pose.
-     * @param weight interpolation factor between 0 and 1.
+     * @param targetVelocity the velocity at the ending pose. The time unit of speed must also be the same as {@code duration} and {@code time}
+     * @param time current time, unit is the same as {@code duration}
+     * @param duration total duration time, unit is the same as {@code time}
      * @return the interpolated pose.
-     * @throws IllegalArgumentException if {@code deltaBaseContribution} does not match with base
-     *                                  or {@code deltaTargetContribution} does not match with target.
-     *                                  There must be the same number of BoneTransforms, and their bone indexes must correspond one to one.
+     * @see AnimationVelocityEstimatorNode Util to compute velocity of Animation
+     * @see RealtimeVelocityEstimatorNode Util to compute velocity in realtime
      */
-    Pose blend(Pose base, Pose deltaBaseContribution, Pose target, Pose deltaTargetContribution, float weight);
+    Pose blend(Pose base, Pose baseVelocity, Pose target, Pose targetVelocity, float time, float duration);
 }

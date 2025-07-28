@@ -85,9 +85,9 @@ public class BlendSpace1DNode{
     /**
      * Performs the interpolation operation using the current pose samplers and position.
      * 
-     * This method iterates through all sampler slots, updates the blend space with
+     * <p>This method iterates through all sampler slots, updates the blend space with
      * the current poses, and then performs the interpolation based on the position
-     * parameter.
+     * parameter.</p>
      * 
      * @return the interpolated pose result
      */

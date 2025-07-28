@@ -57,6 +57,16 @@ public class AnimationRunner implements Tickable, IAnimationRunner {
         return outputPort;
     }
 
+
+    /**
+     * Gets the animation combined with this runner.
+     *
+     * @return the animation combined with this runner.
+     */
+    public Animation getAnimation() {
+        return animation;
+    }
+
     @Override
     public Pose evaluate() {
         return animation.evaluate(MathUtil.toSecond(context.getProgress()));

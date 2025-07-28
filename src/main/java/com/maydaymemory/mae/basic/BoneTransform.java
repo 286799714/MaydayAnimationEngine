@@ -71,10 +71,27 @@ public class BoneTransform implements Comparable<BoneTransform> {
         return scale;
     }
 
+    /**
+     * An identity Transform which represents a bone with no transformation applied.
+     *
+     * <p><b>Important:</b> this should not be in any output pose,
+     * it only serves as a replacement for null input to simplify processing logic</p>
+     */
     public static final BoneTransform IDENTITY_TRANSFORM = new BoneTransform(
             -1,
             new Vector3f(0, 0, 0),
             RotationView.IDENTITY,
             new Vector3f(1, 1, 1)
+    );
+
+    public static final Vector3f ZERO_VECTOR = new Vector3f(0, 0, 0);
+    /**
+     * Represents a velocity with a value of 0 (including velocity, angular velocity, and scaling rate)
+     *
+     * <p><b>Important:</b> this should not be in any output pose,
+     * it only serves as a replacement for null input to simplify processing logic</p>
+     */
+    public static final BoneTransform IDENTITY_VELOCITY = new BoneTransform(
+            -1, ZERO_VECTOR, new RotationVelocityRotationView(ZERO_VECTOR), ZERO_VECTOR
     );
 }
