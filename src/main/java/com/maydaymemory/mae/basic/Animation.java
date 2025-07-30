@@ -39,7 +39,7 @@ public interface Animation {
      * @param boneIndex typically representing a specific bone.
      * @param channel the animation channel
      */
-    void setRotationChannel(int boneIndex, @Nullable InterpolatableChannel<? extends Vector3fc> channel);
+    void setRotationChannel(int boneIndex, @Nullable InterpolatableChannel<? extends Rotation> channel);
 
     /**
      * Evaluates the animation at the given time and returns the corresponding pose.

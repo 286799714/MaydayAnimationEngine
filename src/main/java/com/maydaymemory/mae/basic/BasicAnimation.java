@@ -1,5 +1,6 @@
 package com.maydaymemory.mae.basic;
 
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -28,7 +29,7 @@ public class BasicAnimation implements Animation {
     private final BoneTransformFactory transformFactory;
 
     private static final Vector3f IDENTITY_TRANSLATION = new Vector3f(0, 0, 0);
-    private static final Vector3f IDENTITY_ROTATION = new Vector3f(0, 0, 0);
+    private static final Quaternionf IDENTITY_ROTATION = new Quaternionf(0, 0, 0, 1);
     private static final Vector3f IDENTITY_SCALE = new Vector3f(1, 1, 1);
 
     /**
@@ -66,7 +67,7 @@ public class BasicAnimation implements Animation {
     }
 
     @Override
-    public void setRotationChannel(int boneIndex, @Nullable InterpolatableChannel<? extends Vector3fc> channel) {
+    public void setRotationChannel(int boneIndex, @Nullable InterpolatableChannel<? extends Rotation> channel) {
         getOrCreateChannelBunchAnd(boneIndex, channelBunch -> channelBunch.rotationChannel = channel);
         endTimeS = -1;
     }
@@ -76,12 +77,19 @@ public class BasicAnimation implements Animation {
         PoseBuilder poseBuilder = poseBuilderSupplier.get();
         for(ChannelBunch channelBunch : channels) {
             InterpolatableChannel<? extends Vector3fc> translationChannel = channelBunch.translationChannel;
-            InterpolatableChannel<? extends Vector3fc> rotationChannel = channelBunch.rotationChannel;
+            InterpolatableChannel<? extends Rotation> rotationChannel = channelBunch.rotationChannel;
             InterpolatableChannel<? extends Vector3fc> scaleChannel = channelBunch.scaleChannel;
             Vector3fc translation = translationChannel == null ? IDENTITY_TRANSLATION : translationChannel.compute(timeS);
-            Vector3fc rotation = rotationChannel == null ? IDENTITY_ROTATION : rotationChannel.compute(timeS);
+            Rotation rotation = rotationChannel == null ? null : rotationChannel.compute(timeS);
             Vector3fc scale = scaleChannel == null ? IDENTITY_SCALE : scaleChannel.compute(timeS);
-            BoneTransform boneTransform = transformFactory.createBoneTransform(channelBunch.boneIndex, translation, rotation, scale);
+            BoneTransform boneTransform;
+            if (rotation == null) {
+                boneTransform = transformFactory.createBoneTransform(channelBunch.boneIndex, translation, IDENTITY_ROTATION, scale);
+            } else if (rotation.isEulerAngles()) {
+                boneTransform = transformFactory.createBoneTransform(channelBunch.boneIndex, translation, rotation.getEulerAngles(), scale);
+            } else {
+                boneTransform = transformFactory.createBoneTransform(channelBunch.boneIndex, translation, rotation.getQuaternion(), scale);
+            }
             poseBuilder.addBoneTransform(boneTransform);
         }
         return poseBuilder.toPose();
@@ -231,7 +239,7 @@ public class BasicAnimation implements Animation {
         @Nullable
         private InterpolatableChannel<? extends Vector3fc> translationChannel;
         @Nullable
-        private InterpolatableChannel<? extends Vector3fc> rotationChannel;
+        private InterpolatableChannel<? extends Rotation> rotationChannel;
         @Nullable
         private InterpolatableChannel<? extends Vector3fc> scaleChannel;
 
