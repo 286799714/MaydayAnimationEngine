@@ -1,9 +1,7 @@
 package com.maydaymemory.mae.basic;
 
-import org.joml.Quaternionf;
-import org.joml.Quaternionfc;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import com.maydaymemory.mae.util.MathUtil;
+import org.joml.*;
 
 /**
  * A simple rotation view class that supports ZYX Tait–Bryan angles.
@@ -11,7 +9,6 @@ import org.joml.Vector3fc;
  * It lazily converts between the two representations as needed.
  */
 public class ZYXRotationView implements RotationView {
-
     /**
      * The Euler angles in ZYX order, in radians.
      */
@@ -24,6 +21,7 @@ public class ZYXRotationView implements RotationView {
 
     /**
      * Creates a rotation view from ZYX Euler angles (in radians).
+     *
      * @param angle Euler angles in ZYX order
      */
     public ZYXRotationView(Vector3fc angle) {
@@ -32,6 +30,7 @@ public class ZYXRotationView implements RotationView {
 
     /**
      * Creates a rotation view from a quaternion.
+     *
      * @param quaternion the quaternion representing the rotation
      */
     public ZYXRotationView(Quaternionfc quaternion) {
@@ -41,31 +40,14 @@ public class ZYXRotationView implements RotationView {
     /**
      * Returns the rotation represented as Euler angles in ZYX order.
      * Converts from quaternion if necessary (lazy evaluation).
+     *
      * @return the ZYX Euler angles (in radians)
      */
     @Override
     public Vector3fc asEulerAngle() {
         if (angle == null) {
-            Vector3f angle = new Vector3f();
-            float x = quaternion.x();
-            float y = quaternion.y();
-            float z = quaternion.z();
-            float w = quaternion.w();
-            angle.y = org.joml.Math.safeAsin(-2.0f * (x * z - w * y));
-
-            // Handle gimbal lock: when pitch ≈ ±90°
-            if (angle.y > Math.PI / 2d - 1e-3) {
-                angle.z = -2.0f * (float) Math.atan2(x, w);
-                angle.x = 0.0f;
-            } else if (angle.y < -(Math.PI / 2d - 1e-3)) {
-                angle.z = 2.0f * (float) Math.atan2(x, w);
-                angle.x = 0.0f;
-            } else {
-                angle.z = (float) Math.atan2(x * y + w * z, 0.5f - y * y - z * z);
-                angle.x = (float) Math.atan2(y * z + w * x, 0.5f - x * x + y * y);
-            }
-
-            this.angle = angle;
+            Matrix3f matrix = new Matrix3f().set(quaternion);
+            this.angle = MathUtil.extractEulerAnglesZYX(matrix);
         }
         return angle;
     }
@@ -73,12 +55,13 @@ public class ZYXRotationView implements RotationView {
     /**
      * Returns the rotation represented as a quaternion.
      * Converts from Euler angles if necessary (lazy evaluation).
+     *
      * @return the quaternion representing the rotation
      */
     @Override
     public Quaternionfc asQuaternion() {
         if (quaternion == null) {
-            quaternion = new Quaternionf().rotateZYX(angle.z(), angle.y(), angle.x());
+            quaternion = new Quaternionf().rotateZYX(angle.z(), angle.y(), angle.x()); // Quaternion mul order is reversed
         }
         return quaternion;
     }

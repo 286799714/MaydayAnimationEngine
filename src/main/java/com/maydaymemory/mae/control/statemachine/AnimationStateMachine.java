@@ -22,7 +22,8 @@ import java.util.function.Supplier;
  * management. It can handle both active states and transitions in progress,
  * providing seamless animation control.</p>
  * 
- * @param <T> the type of context used by the states and transitions
+ * @param <T> the type of context used by the states and transitions. If it is {@link Tickable},
+ *           statemachine will also automatically tick it when statemachine itself is ticked.
  * @author MaydayMemory
  * @since 1.0.1
  */
@@ -33,7 +34,10 @@ public class AnimationStateMachine<T> implements Tickable {
     /** The current transition control block, or null if no transition is active */
     private TransitionControlBlock<T> transitionControlBlock;
     
-    /** The context used by states and transitions */
+    /**
+     * The context used by states and transitions.
+     * If it is {@link Tickable},statemachine will also automatically tick it when statemachine itself is ticked.
+     */
     private final T context;
     
     /** Supplier for current time in nanoseconds */
@@ -57,6 +61,9 @@ public class AnimationStateMachine<T> implements Tickable {
 
     @Override
     public void tick() {
+        if (context instanceof Tickable) {
+            ((Tickable)context).tick();
+        }
         if (state != null) {
             state.onUpdate(context);
             TransitionControlBlock<T> tcb = tryTransfer(state, () -> state.evaluatePose(context));
@@ -64,6 +71,7 @@ public class AnimationStateMachine<T> implements Tickable {
                 this.transitionControlBlock = tcb;
                 state.onExit(context, tcb.getTransition());
                 state = null;
+                tcb.getTransition().afterTrigger(context);
             }
         } else if (transitionControlBlock != null) {
             if (transitionControlBlock.getController().isFinished()) {
@@ -98,6 +106,7 @@ public class AnimationStateMachine<T> implements Tickable {
             }
             if (tcb != null) {
                 this.transitionControlBlock = tcb;
+                tcb.getTransition().afterTrigger(context);
             }
         }
     }
@@ -150,6 +159,15 @@ public class AnimationStateMachine<T> implements Tickable {
      */
     public OutputPort<Pose> getOutputPort() {
         return outputPort;
+    }
+
+    /**
+     * Gets context instance combined with this statemachine
+     *
+     * @return context instance combined with this statemachine
+     */
+    public T getContext() {
+        return context;
     }
 
     /**

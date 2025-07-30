@@ -10,12 +10,12 @@ import org.joml.Vector3fc;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
-public class QuinticHermiteInterpolatorBlender implements KinematicInterpolatorBlender{
+public class CubicHermiteInterpolatorBlender implements KinematicInterpolatorBlender{
     private final BoneTransformFactory boneTransformFactory;
     private final Supplier<PoseBuilder> poseBuilderSupplier;
 
-    public QuinticHermiteInterpolatorBlender(BoneTransformFactory boneTransformFactory,
-                                   Supplier<PoseBuilder> poseBuilderSupplier) {
+    public CubicHermiteInterpolatorBlender(BoneTransformFactory boneTransformFactory,
+                                           Supplier<PoseBuilder> poseBuilderSupplier) {
         this.boneTransformFactory = boneTransformFactory;
         this.poseBuilderSupplier = poseBuilderSupplier;
     }
@@ -23,13 +23,12 @@ public class QuinticHermiteInterpolatorBlender implements KinematicInterpolatorB
     @Override
     public Pose blend(Pose base, Pose baseVelocity, Pose target, Pose targetVelocity, float time, float duration) {
         float weight = time / duration;
-        float w3 = weight * weight * weight;
-        float w4 = w3 * weight;
-        float w5 = w4 * weight;
-        float h1 = 1 - 10 * w3 + 15 * w4 - 6 * w5;
-        float h2 = weight - 6 * w3 + 8 * w4 - 3 * w5;
-        float h3 = 10 * w3 - 15 * w4 + 6 * w5;
-        float h4 = -4 * w3 + 7 * w4 - 3 * w5;
+        float w2 = weight * weight;
+        float w3 = w2 * weight;
+        float h1 = 2 * w3 - 3 * w2 + 1;
+        float h2 = w3 - 2 * w2 + weight;
+        float h3 = -2 * w3 + 3 * w2;
+        float h4 = w3 - w2;
         @SuppressWarnings("unchecked")
         Iterator<BoneTransform>[] iterators = new Iterator[] {
                 base.getBoneTransforms().iterator(),
@@ -92,7 +91,7 @@ public class QuinticHermiteInterpolatorBlender implements KinematicInterpolatorB
                     transformsToCalculate[3].rotation().asEulerAngle(),
                     h1, h2, h3, h4, time
             );
-            Quaternionf blendedRotation = MathUtil.exp(blendedRotationVector);
+            Quaternionf blendedRotation = MathUtil.exp(blendedRotationVector).mul(q0);
             builder.addBoneTransform(boneTransformFactory.createBoneTransform(index, newTransition, blendedRotation, newScale));
         }
         return builder.toPose();

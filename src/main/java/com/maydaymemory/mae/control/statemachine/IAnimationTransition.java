@@ -60,14 +60,21 @@ public interface IAnimationTransition<T> {
     /**
      * Determines if this transition can be triggered in the current context.
      *
-     * <b>Design Note:</b> <br>
+     * <p><b>Design Note:</b> <br>
      * All data required for transition triggering should be accessed via the <code>context</code> parameter.
-     * Transition instances should not store any internal state.
+     * Transition instances should not store any internal state.</p>
      *
      * @param context the context containing state information
      * @return true if this transition can be triggered, false otherwise
      */
     boolean canTrigger(T context);
+
+    /**
+     * Called after the transition has been triggered.
+     *
+     * @param context the context containing state information
+     */
+    void afterTrigger(T context);
 
     /**
      * Interpolates between two poses based on the transition progress.
