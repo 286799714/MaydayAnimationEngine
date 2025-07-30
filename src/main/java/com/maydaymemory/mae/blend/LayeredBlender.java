@@ -7,7 +7,7 @@ import com.maydaymemory.mae.basic.Pose;
  * <p>
  * This interface defines a strategy to blend input pose over a base pose,
  * how close each bone's transform is to the input pose depends on the weight of the corresponding bone in the <code>layer</code>.
- * <p>
+ * </p>
  */
 public interface LayeredBlender {
     Pose blend(Pose basePose, Pose inputPose, LayerBlend layer);

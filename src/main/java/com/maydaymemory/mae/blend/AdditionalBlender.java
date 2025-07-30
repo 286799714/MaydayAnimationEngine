@@ -22,5 +22,18 @@ import com.maydaymemory.mae.basic.Pose;
  * @see AdditiveBlender for a commutative variant using Euler-angle addition.
  */
 public interface AdditionalBlender {
+    /**
+     * Perform additional blending of two poses.
+     *
+     * <p>The blending rules are as follows:</p>
+     * <ul>
+     *     <li>Translations are combined by adding the values of each axis.</li>
+     *     <li>Rotations are combined using <b>quaternion multiplication</b>.</li>
+     *     <li>Scales are combined by multiplying the values of each axis.</li>
+     * </ul>
+     * @param basePose the base pose
+     * @param additionalPose the additional pose
+     * @return the blended pose
+     */
     Pose blend(Pose basePose, Pose additionalPose);
 }

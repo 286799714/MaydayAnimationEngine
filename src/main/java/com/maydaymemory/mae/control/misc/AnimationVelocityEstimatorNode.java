@@ -13,6 +13,14 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * Velocity estimation node, which could estimate pose velocity of animation.
+ *
+ * <p>
+ * <b>Experimental:</b> users should be prepared for potential API changes and behavior modifications
+ * in future versions.
+ * </p>
+ */
 public class AnimationVelocityEstimatorNode {
     private final Slot<Animation> animationSlot = new Slot<>();
     private final Slot<Float> timeSlot = new Slot<>();
@@ -20,6 +28,11 @@ public class AnimationVelocityEstimatorNode {
     private final OutputPort<Pose> outputPort = this::getVelocityPose;
     private final Supplier<PoseBuilder> poseBuilderSupplier;
 
+    /**
+     * Constructs a new AnimationVelocityEstimatorNode.
+     *
+     * @param poseBuilderSupplier a supplier for a PoseBuilder
+     */
     public AnimationVelocityEstimatorNode(Supplier<PoseBuilder> poseBuilderSupplier) {
         samplingIntervalSlot.setDefaultValue(0.016f); // 60 FPS
         timeSlot.setDefaultValue(0f);
@@ -46,18 +59,44 @@ public class AnimationVelocityEstimatorNode {
         return poseDifferentiation(p0, p1, poseBuilderSupplier, samplingInterval);
     }
 
+    /**
+     * Gets the sampling interval slot.
+     *
+     * <p>
+     * The animation speed is estimated by sampling the animation at two points,
+     * calculating the difference, and dividing it by the interval. The default value is 0.016s.
+     * This value should not be too large or too small.
+     * </p>
+     *
+     * @return sampling interval slot
+     */
     public Slot<Float> getSamplingIntervalSlot() {
         return samplingIntervalSlot;
     }
 
+    /**
+     * Get time slot for input.
+     *
+     * @return time slot
+     */
     public Slot<Float> getTimeSlot() {
         return timeSlot;
     }
 
+    /**
+     * Get Animation slot for input.
+     *
+     * @return Animation slot
+     */
     public Slot<Animation> getAnimationSlot() {
         return animationSlot;
     }
 
+    /**
+     * Get Pose output port.
+     *
+     * @return pose output port
+     */
     public OutputPort<Pose> getOutputPort() {
         return outputPort;
     }

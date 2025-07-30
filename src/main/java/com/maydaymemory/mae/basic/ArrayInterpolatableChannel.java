@@ -3,10 +3,29 @@ package com.maydaymemory.mae.basic;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
+/**
+ * An array-backed interpolatable channel
+ *
+ * @param <T> the type of the interpolatable keyframe
+ */
 public class ArrayInterpolatableChannel<T>
         extends ArrayAnimationChannelBase<InterpolatableKeyframe<T>>
         implements InterpolatableChannel<T> {
 
+    /**
+     * Constructs a clip channel with specified initial list,
+     * this list will be wrapped (or, so called, enhanced), not copied, which means that the outside holding this list
+     * can still access and change the list elements.
+     *
+     * <p>
+     * <b>Important:</b> The program does not check whether the keyframes in the initial list are in the correct order
+     * (in ascending time order). Please make sure you know the order of the elements in the list.
+     * Otherwise you should pass an empty list to the constructor and add keyframes one by one,
+     * then call {@link #refresh()} to sort them.
+     * </p>
+     *
+     * @param keyframes the initial list of keyframes
+     */
     public ArrayInterpolatableChannel(@Nonnull ArrayList<InterpolatableKeyframe<T>> keyframes) {
         super(keyframes);
     }

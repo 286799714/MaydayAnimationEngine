@@ -6,12 +6,31 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Animation channel that stores keyframes in an array.
+ *
+ * @param <T> Keyframe type
+ */
 public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
         extends DirtyTrackingArrayList<T>
         implements AnimationChannel{
 
     private int indexCache = -1;
 
+    /**
+     * Constructs a array animation channel with specified initial list,
+     * this list will be wrapped (or, so called, enhanced), not copied, which means that the outside holding this list
+     * can still access and change the list elements.
+     *
+     * <p>
+     * <b>Important:</b> The program does not check whether the keyframes in the initial list are in the correct order
+     * (in ascending time order). Please make sure you know the order of the elements in the list.
+     * Otherwise you should pass an empty list to the constructor and add keyframes one by one,
+     * then call {@link #refresh()} to sort them.
+     * </p>
+     *
+     * @param initialList the initial list of keyframes
+     */
     public ArrayAnimationChannelBase(@Nonnull ArrayList<T> initialList) {
         super(initialList);
     }
@@ -85,6 +104,9 @@ public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
         return result;
     }
 
+    /**
+     * Checks whether this channel is dirty.
+     */
     protected void assertNotDirty() {
         if (isDirty()) {
             throw new AssertionError("The channel is dirty. Please make sure to call the refresh method after manipulating keyframes.");

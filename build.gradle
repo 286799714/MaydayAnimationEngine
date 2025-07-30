@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'signing'
 }
 
 group = 'com.maydaymemory.mae'
@@ -25,6 +26,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+java{
+    withJavadocJar()
+    withSourcesJar()
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -33,10 +39,45 @@ publishing {
             groupId = 'com.maydaymemory'
             artifactId = "mae"
             version = project.version
+
+            pom {
+                name = 'Mayday Animation Engine'
+                description = 'A java runtime animation library'
+                url = 'https://github.com/286799714/MaydayAnimationEngine'
+
+                licenses {
+                    license {
+                        name = 'The MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'maydaymemory'
+                        name = 'MaydayMemory'
+                        email = 'maydaymemory123@gmail.com'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:https://github.com/286799714/MaydayAnimationEngine.git'
+                    developerConnection = 'scm:git:ssh://github.com/286799714/MaydayAnimationEngine.git'
+                    url = 'https://github.com/286799714/MaydayAnimationEngine'
+                }
+            }
         }
     }
 
     repositories {
-        mavenLocal() // ~/.m2/repository
+        maven {
+            name = "localBuildRepo"
+            url = uri("$buildDir/maven-repo")
+        }
     }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }

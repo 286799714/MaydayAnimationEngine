@@ -5,6 +5,9 @@ import org.joml.Vector3fc;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/***
+ * Animation interface.
+ */
 public interface Animation {
     /**
      * Get the name of the animation.

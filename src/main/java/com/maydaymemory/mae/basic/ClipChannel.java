@@ -1,5 +1,14 @@
 package com.maydaymemory.mae.basic;
 
+/**
+ * Represents an animation channel that supports extracting (clipping) content over a time range.
+ *
+ * <p>This interface extends {@link AnimationChannel} and provides a method to retrieve a sequence of elements
+ * (such as events or samples) that occur within a specified time interval. The order of the returned elements
+ * depends on the direction of the time range.</p>
+ *
+ * @param <T> the type of element contained in this channel
+ */
 public interface ClipChannel<T> extends AnimationChannel{
     /**
      * Clips the content in the specified time range and returns it in order.

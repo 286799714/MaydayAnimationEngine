@@ -62,7 +62,7 @@ public class BlendSpace2DNode {
     /**
      * Gets the list of sampler slots that provide poses to the blend space.
      * 
-     * @return the list of Slot<PoseSampler> for pose inputs
+     * @return the list of Slot&lt;PoseSampler&gt; for pose inputs
      */
     public List<Slot<BlendSpace1DNode.PoseSampler>> getSamplerSlots() {
         return samplerSlots;

@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Basic implementation of Animation
+ */
 public class BasicAnimation implements Animation {
     private final String name;
     private float endTimeS = -1;
@@ -28,6 +31,13 @@ public class BasicAnimation implements Animation {
     private static final Vector3f IDENTITY_ROTATION = new Vector3f(0, 0, 0);
     private static final Vector3f IDENTITY_SCALE = new Vector3f(1, 1, 1);
 
+    /**
+     * Construct an animation.
+     *
+     * @param name the name of the animation
+     * @param boneTransformFactory the factory to create bone transforms
+     * @param poseBuilderSupplier the supplier of pose builders
+     */
     public BasicAnimation(String name,
                           BoneTransformFactory boneTransformFactory,
                           Supplier<PoseBuilder> poseBuilderSupplier) {

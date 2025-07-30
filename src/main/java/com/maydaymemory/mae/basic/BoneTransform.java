@@ -25,6 +25,8 @@ public class BoneTransform implements Comparable<BoneTransform> {
     private final @Nonnull Vector3fc scale;
 
     /**
+     * Constructs a new BoneTransform with the specified bone index and transformation components.
+     * 
      * @param boneIndex   The unique index of the bone within the skeleton hierarchy.
      * @param translation The bone's local-space translation vector.
      * @param rotation    The bone's local-space rotation, represented as a unit quaternion.
@@ -55,18 +57,38 @@ public class BoneTransform implements Comparable<BoneTransform> {
         return Integer.compare(this.boneIndex, transform.boneIndex);
     }
 
+    /**
+     * Gets the bone index of this transform.
+     * 
+     * @return the bone index
+     */
     public int boneIndex() {
         return boneIndex;
     }
 
+    /**
+     * Gets the translation component of this transform.
+     * 
+     * @return the translation vector
+     */
     public Vector3fc translation() {
         return translation;
     }
 
+    /**
+     * Gets the rotation component of this transform.
+     * 
+     * @return the rotation view
+     */
     public RotationView rotation() {
         return rotation;
     }
 
+    /**
+     * Gets the scale component of this transform.
+     * 
+     * @return the scale vector
+     */
     public Vector3fc scale() {
         return scale;
     }
@@ -84,6 +106,9 @@ public class BoneTransform implements Comparable<BoneTransform> {
             new Vector3f(1, 1, 1)
     );
 
+    /**
+     * A zero vector constant used for representing zero translations, scales, or velocities.
+     */
     public static final Vector3f ZERO_VECTOR = new Vector3f(0, 0, 0);
     /**
      * Represents a velocity with a value of 0 (including velocity, angular velocity, and scaling rate)
