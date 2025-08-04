@@ -37,9 +37,6 @@ public class RealtimeVelocityEstimatorNode implements Tickable {
 
     // Configuration parameters
     private final int maxHistoryFrames;
-    private final float maxTranslationVelocity;
-    private final float maxRotationVelocity;
-    private final float maxScaleVelocity;
 
     // Historical data storage
     private final Queue<HistoricalFrame> frameHistory;
@@ -55,7 +52,7 @@ public class RealtimeVelocityEstimatorNode implements Tickable {
      * may change in future versions as the algorithm is refined.</p>
      */
     public RealtimeVelocityEstimatorNode(Supplier<PoseBuilder> poseBuilderSupplier, LongSupplier currentNanosSupplier) {
-        this(poseBuilderSupplier, currentNanosSupplier, 8, 50.0f, (float) (20 * Math.PI), 10.0f);
+        this(poseBuilderSupplier, currentNanosSupplier, 8);
     }
 
     /**
@@ -68,18 +65,11 @@ public class RealtimeVelocityEstimatorNode implements Tickable {
      * @param poseBuilderSupplier    supplier for pose builders
      * @param currentNanosSupplier   supplier for current time in nanoseconds
      * @param maxHistoryFrames       maximum number of historical frames to keep (typically 4-12)
-     * @param maxTranslationVelocity maximum translation velocity in units/second
-     * @param maxRotationVelocity    maximum rotation velocity in radians/second
-     * @param maxScaleVelocity       maximum scale velocity in scale units/second
      */
-    public RealtimeVelocityEstimatorNode(Supplier<PoseBuilder> poseBuilderSupplier, LongSupplier currentNanosSupplier,
-                                         int maxHistoryFrames, float maxTranslationVelocity, float maxRotationVelocity, float maxScaleVelocity) {
+    public RealtimeVelocityEstimatorNode(Supplier<PoseBuilder> poseBuilderSupplier, LongSupplier currentNanosSupplier, int maxHistoryFrames) {
         this.poseBuilderSupplier = poseBuilderSupplier;
         this.currentNanosSupplier = currentNanosSupplier;
         this.maxHistoryFrames = maxHistoryFrames;
-        this.maxTranslationVelocity = maxTranslationVelocity;
-        this.maxRotationVelocity = maxRotationVelocity;
-        this.maxScaleVelocity = maxScaleVelocity;
 
         this.frameHistory = new LinkedList<>();
     }
@@ -206,11 +196,6 @@ public class RealtimeVelocityEstimatorNode implements Tickable {
             Quaternionf relativeRotation = new Quaternionf();
             q1.mul(q0.conjugate(relativeRotation), relativeRotation);
             Vector3f rotationVelocity = MathUtil.logUnit(relativeRotation).div(intervalTime);
-
-            // Apply velocity limits
-            translationVelocity = clampVector(translationVelocity, maxTranslationVelocity);
-            rotationVelocity = clampVector(rotationVelocity, maxRotationVelocity);
-            scaleVelocity = clampVector(scaleVelocity, maxScaleVelocity);
 
             translationVelocities[i - 1] = translationVelocity;
             rotationVelocities[i - 1] = rotationVelocity;

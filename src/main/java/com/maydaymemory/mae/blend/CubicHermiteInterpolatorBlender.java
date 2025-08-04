@@ -69,14 +69,14 @@ public class CubicHermiteInterpolatorBlender implements KinematicInterpolatorBle
                     transformsToCalculate[1].translation(),
                     transformsToCalculate[2].translation(),
                     transformsToCalculate[3].translation(),
-                    h1, h2, h3, h4, time
+                    h1, h2, h3, h4, duration
             );
             Vector3f newScale = blend(
                     transformsToCalculate[0].scale(),
                     transformsToCalculate[1].scale(),
                     transformsToCalculate[2].scale(),
                     transformsToCalculate[3].scale(),
-                    h1, h2, h3, h4, time
+                    h1, h2, h3, h4, duration
             );
 
             Quaternionfc q0 = transformsToCalculate[0].rotation().asQuaternion();
@@ -89,7 +89,7 @@ public class CubicHermiteInterpolatorBlender implements KinematicInterpolatorBle
                     transformsToCalculate[1].rotation().asEulerAngle(),
                     relativeRotationVector,
                     transformsToCalculate[3].rotation().asEulerAngle(),
-                    h1, h2, h3, h4, time
+                    h1, h2, h3, h4, duration
             );
             Quaternionf blendedRotation = MathUtil.exp(blendedRotationVector).mul(q0);
             builder.addBoneTransform(boneTransformFactory.createBoneTransform(index, newTransition, blendedRotation, newScale));
@@ -98,12 +98,12 @@ public class CubicHermiteInterpolatorBlender implements KinematicInterpolatorBle
     }
 
     private static Vector3f blend(Vector3fc p0, Vector3fc v0, Vector3fc p1, Vector3fc v1,
-                                  float h1, float h2, float h3, float h4, float time) {
-        Vector3f alphaP0 = v0.mul(time, new Vector3f());
-        Vector3f alphaP1 = v1.mul(time, new Vector3f());
-        float x = p0.x() * h1 + alphaP0.x * h2 + p1.x() * h3 + alphaP1.x * h4;
-        float y = p0.y() * h1 + alphaP0.y * h2 + p1.y() * h3 + alphaP1.y * h4;
-        float z = p0.z() * h1 + alphaP0.z * h2 + p1.z() * h3 + alphaP1.z * h4;
+                                  float h1, float h2, float h3, float h4, float duration) {
+        Vector3f adjustedV0 = new Vector3f(v0).mul(duration);
+        Vector3f adjustedV1 = new Vector3f(v1).mul(duration);
+        float x = p0.x() * h1 + adjustedV0.x * h2 + p1.x() * h3 + adjustedV1.x * h4;
+        float y = p0.y() * h1 + adjustedV0.y * h2 + p1.y() * h3 + adjustedV1.y * h4;
+        float z = p0.z() * h1 + adjustedV0.z * h2 + p1.z() * h3 + adjustedV1.z * h4;
         return new Vector3f(x, y, z);
     }
 }
