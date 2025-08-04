@@ -10,7 +10,7 @@ public interface InterpolatorBlender {
     /**
      * Blends two poses using the specified weight.
      *
-     * The weight determines the influence of each pose in the result:
+     * <p>The weight determines the influence of each pose in the result:</p>
      * <ul>
      *   <li>When {@code weight} is 0, the result is identical to {@code basePose}.</li>
      *   <li>When {@code weight} is 1, the result is identical to {@code inputPose}.</li>

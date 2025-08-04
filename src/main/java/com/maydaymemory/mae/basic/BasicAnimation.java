@@ -127,7 +127,7 @@ public class BasicAnimation implements Animation {
     @Nullable
     @Override
     public Iterable<?> clip(int i, float fromTimeS, float toTimeS) {
-        if (i > clipChannels.size() || i < 0) {
+        if (i >= clipChannels.size() || i < 0) {
             return null;
         }
         ClipChannel<?> channel = clipChannels.get(i);
@@ -169,7 +169,7 @@ public class BasicAnimation implements Animation {
     @Nullable
     @Override
     public Object evaluateCurve(int i, float timeS) {
-        if (i > curves.size() || i < 0) {
+        if (i >= curves.size() || i < 0) {
             return null;
         }
         InterpolatableChannel<?> curve = curves.get(i);

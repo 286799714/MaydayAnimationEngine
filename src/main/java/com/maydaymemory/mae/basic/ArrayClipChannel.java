@@ -42,7 +42,14 @@ public class ArrayClipChannel <T>
     public Iterable<T> clip(float fromTimeS, float toTimeS) {
         assertNotDirty();
         if (fromTimeS == toTimeS) {
-            return Collections.emptyList();
+            // handle the situation of [x, x). When the time period is [x, x), the keyframe at x should be returned.
+            int index = findIndexBefore(fromTimeS, false);
+            Keyframe<T> keyframe = get(index);
+            if (keyframe.getTimeS() == fromTimeS) {
+                return Collections.singletonList(keyframe.getValue());
+            } else {
+                return Collections.emptyList();
+            }
         }
         int indexFrom, indexTo;
         if (fromTimeS > toTimeS) {
