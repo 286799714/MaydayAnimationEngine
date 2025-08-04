@@ -2,7 +2,7 @@
 
 [![Java](https://img.shields.io/badge/Java-8+-orange.svg)](https://www.oracle.com/java/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/Version-1.0.2-blue.svg)](https://github.com/286799714/MaydayAnimationEngine/releases)
+[![Version](https://img.shields.io/badge/Version-1.0.3-blue.svg)](https://github.com/286799714/MaydayAnimationEngine/releases)
 
 > A powerful Java runtime animation library for creating smooth, high-performance animations and pose blending systems.
 
