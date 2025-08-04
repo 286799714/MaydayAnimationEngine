@@ -5,9 +5,9 @@ plugins {
 }
 
 group = 'com.maydaymemory.mae'
-version = '1.0.2'
+version = '1.0.3'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
@@ -80,4 +80,26 @@ publishing {
 signing {
     useGpgCmd()
     sign publishing.publications.mavenJava
+}
+
+// Remove publishToMavenLocal's dependency on signing task
+plugins.withId('maven-publish') {
+    afterEvaluate {
+        tasks.named('publishToMavenLocal') {
+            dependsOn.removeAll { dep ->
+                // Remove all signature related dependencies
+                def task = dep instanceof Task ? dep : findProperty('dep')?.get() as Task
+                task?.name?.startsWith('sign') ?: false
+            }
+        }
+
+        // Ensure signing task is not executed when publishingToMavenLocal
+        gradle.taskGraph.whenReady { graph ->
+            if (graph.hasTask(':publishToMavenLocal')) {
+                tasks.withType(Sign).configureEach { signTask ->
+                    signTask.enabled = false
+                }
+            }
+        }
+    }
 }

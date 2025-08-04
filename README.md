@@ -29,14 +29,14 @@
 <dependency>
     <groupId>com.maydaymemory</groupId>
     <artifactId>mae</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
 #### Gradle Dependency
 
 ```gradle
-implementation 'com.maydaymemory:mae:1.0.2'
+implementation 'com.maydaymemory:mae:1.0.3'
 ```
 
 #### Manual Installation
@@ -44,7 +44,7 @@ implementation 'com.maydaymemory:mae:1.0.2'
 ```bash
 git clone https://github.com/286799714/MaydayAnimationEngine.git
 cd MaydayAnimationEngine
-./gradlew build
+./gradlew publishToMavenLocal
 ```
 
 ## 📖 Usage Examples
