@@ -65,18 +65,18 @@ public class LoopingState implements IAnimationState {
             progress = progress % maxProgress;
             long times = progress / maxProgress;
             times--;
-            ctx.enqueueClipPlan(new LongLongImmutablePair(ctx.getProgress(), maxProgress));
+            ctx.enqueueClipPlan(new LongLongImmutablePair(ctx.getProgress(), Long.MAX_VALUE));
             for (int i = 0; i < times; i++) {
-                ctx.enqueueClipPlan(new LongLongImmutablePair(0, maxProgress));
+                ctx.enqueueClipPlan(new LongLongImmutablePair(0, Long.MAX_VALUE));
             }
             ctx.enqueueClipPlan(new LongLongImmutablePair(0, progress));
         } else if (progress < 0) {
             progress = progress % maxProgress + maxProgress;
             long times = progress / maxProgress;
             times = -times;
-            ctx.enqueueClipPlan(new LongLongImmutablePair(ctx.getProgress(), 0));
+            ctx.enqueueClipPlan(new LongLongImmutablePair(ctx.getProgress(), -Long.MAX_VALUE));
             for (int i = 0; i < times; i++) {
-                ctx.enqueueClipPlan(new LongLongImmutablePair(maxProgress, 0));
+                ctx.enqueueClipPlan(new LongLongImmutablePair(maxProgress, -Long.MAX_VALUE));
             }
             ctx.enqueueClipPlan(new LongLongImmutablePair(maxProgress, progress));
         } else {

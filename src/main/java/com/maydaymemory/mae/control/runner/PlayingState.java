@@ -64,15 +64,15 @@ public class PlayingState implements IAnimationState {
         long maxProgress = ctx.getMaxProgress();
         boolean flag = false;
 
-        if (progress > maxProgress) {
+        if (progress >= maxProgress) {
             progress = maxProgress;
             flag = true;
-        } else if (progress < 0) {
+        } else if (progress <= 0) {
             progress = 0;
             flag = true;
         }
 
-        ctx.enqueueClipPlan(new LongLongImmutablePair(ctx.getProgress(), progress));
+        ctx.enqueueClipPlan(new LongLongImmutablePair(ctx.getProgress(), progress == maxProgress ? Long.MAX_VALUE : progress));
         ctx.setProgress(progress);
         ctx.setLastUpdateTime(currentNanos);
 
