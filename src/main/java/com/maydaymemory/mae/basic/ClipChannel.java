@@ -23,11 +23,12 @@ public interface ClipChannel<T> extends AnimationChannel{
      *
      * <p>
      * If {@code fromTimeS} &lt; {@code toTimeS}, the results are returned in chronological order.<br>
-     * If {@code fromTimeS} &gt; {@code toTimeS}, the results are returned in reverse chronological order.
+     * If {@code fromTimeS} &gt; {@code toTimeS}, the results are returned in reverse chronological order.<br>
+     * If {@code fromTimeS} = {@code toTimeS}, the result will be empty.
      *
      * @param fromTimeS the starting point of the time range (inclusive)
      * @param toTimeS the ending point of the time range (exclusive)
-     * @return an {@code Iterable<T>} representing the clipped content in the specified time range and order
+     * @return an {@code Iterable<Keyframe<T>>} representing the clipped content in the specified time range and order
      */
-    Iterable<T> clip(float fromTimeS, float toTimeS);
+    Iterable<Keyframe<T>> clip(float fromTimeS, float toTimeS);
 }

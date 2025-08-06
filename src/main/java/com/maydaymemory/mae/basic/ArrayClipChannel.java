@@ -1,9 +1,7 @@
 package com.maydaymemory.mae.basic;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a clip channel (or event channel as universal understanding).
@@ -38,8 +36,15 @@ public class ArrayClipChannel <T>
         super(keyframes);
     }
 
+    /**
+     * Constructs an empty clip channel.
+     */
+    public ArrayClipChannel() {
+        super(new ArrayList<>());
+    }
+
     @Override
-    public Iterable<T> clip(float fromTimeS, float toTimeS) {
+    public Iterable<Keyframe<T>> clip(float fromTimeS, float toTimeS) {
         assertNotDirty();
         if (fromTimeS == toTimeS) {
             return Collections.emptyList();
@@ -62,16 +67,27 @@ public class ArrayClipChannel <T>
         // No need to check if indexFrom is out of bound because if indexFrom != indexTo, it must smaller than indexTo,
         // and indexTo is smaller than list size. Therefore (indexFrom + 1) must smaller than list size.
         List<Keyframe<T>> subList = subList(indexFrom + 1, indexTo + 1);
-        List<T> result = new ArrayList<>(subList.size());
-        if (fromTimeS > toTimeS) { // return in reverse order
-            for (int i = subList.size() - 1; i >= 0; i--) {
-                result.add(subList.get(i).getValue());
-            }
+        if (fromTimeS > toTimeS) {
+            // return in reverse order
+            return reversed(subList);
         } else {
-            for (Keyframe<T> keyframe : subList) {
-                result.add(keyframe.getValue());
-            }
+            return subList;
         }
-        return result;
+    }
+
+    public static <T> Iterable<T> reversed(List<T> list) {
+        return () -> new Iterator<T>() {
+            private final ListIterator<T> it = list.listIterator(list.size());
+
+            @Override
+            public boolean hasNext() {
+                return it.hasPrevious();
+            }
+
+            @Override
+            public T next() {
+                return it.previous();
+            }
+        };
     }
 }

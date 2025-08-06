@@ -112,8 +112,8 @@ public class BasicAnimation implements Animation {
     }
 
     @Override
-    public List<Iterable<?>> clip(float fromTimeS, float toTimeS) {
-        ArrayList<Iterable<?>> results = new ArrayList<>(clipChannels.size());
+    public List<Iterable<? extends Keyframe<?>>> clip(float fromTimeS, float toTimeS) {
+        ArrayList<Iterable<? extends Keyframe<?>>> results = new ArrayList<>(clipChannels.size());
         for (ClipChannel<?> clipChannel : clipChannels) {
             if (clipChannel != null) {
                 results.add(clipChannel.clip(fromTimeS, toTimeS));
@@ -126,7 +126,7 @@ public class BasicAnimation implements Animation {
 
     @Nullable
     @Override
-    public Iterable<?> clip(int i, float fromTimeS, float toTimeS) {
+    public Iterable<? extends Keyframe<?>> clip(int i, float fromTimeS, float toTimeS) {
         if (i >= clipChannels.size() || i < 0) {
             return null;
         }

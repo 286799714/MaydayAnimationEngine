@@ -1,6 +1,7 @@
 package com.maydaymemory.mae.control.runner;
 
 import com.maydaymemory.mae.basic.Animation;
+import com.maydaymemory.mae.basic.Keyframe;
 import com.maydaymemory.mae.basic.Pose;
 import com.maydaymemory.mae.control.OutputPort;
 import com.maydaymemory.mae.control.Tickable;
@@ -73,7 +74,7 @@ public class AnimationRunner implements Tickable, IAnimationRunner {
     }
 
     @Override
-    public List<Iterable<?>> clip() {
+    public List<Iterable<? extends Keyframe<?>>> clip() {
         Iterator<? extends LongLongImmutablePair> iterator = context.clipPlanIterator();
         if (!iterator.hasNext()) {
             // The index where the channel exists corresponds to an empty set,
@@ -81,13 +82,13 @@ public class AnimationRunner implements Tickable, IAnimationRunner {
             return animation.clip(0, 0);
         }
         LongLongImmutablePair pair = iterator.next();
-        List<Iterable<?>> result = animation.clip(MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
-        List<Iterable<?>> clips;
+        List<Iterable<? extends Keyframe<?>>> result = animation.clip(MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
+        List<Iterable<? extends Keyframe<?>>> clips;
         while (iterator.hasNext()) {
             pair = iterator.next();
             clips = animation.clip(MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
             for (int i = 0; i < result.size(); i++) {
-                Iterable<?> a = result.get(i);
+                Iterable<? extends Keyframe<?>> a = result.get(i);
                 if (a == null) {
                     continue;
                 }
@@ -99,17 +100,17 @@ public class AnimationRunner implements Tickable, IAnimationRunner {
 
     @Override
     @Nullable
-    public Iterable<?> clip(int i) {
+    public Iterable<? extends Keyframe<?>> clip(int i) {
         Iterator<? extends LongLongImmutablePair> iterator = context.clipPlanIterator();
         if (!iterator.hasNext()) {
             return animation.clip(i, 0, 0);
         }
         LongLongImmutablePair pair = iterator.next();
-        Iterable<?> result = animation.clip(i, MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
+        Iterable<? extends Keyframe<?>> result = animation.clip(i, MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
         if (result == null) {
             return  null;
         }
-        Iterable<?> clip;
+        Iterable<? extends Keyframe<?>> clip;
         while (iterator.hasNext()) {
             pair = iterator.next();
             clip = animation.clip(i, MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));

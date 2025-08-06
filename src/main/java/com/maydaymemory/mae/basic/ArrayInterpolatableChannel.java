@@ -30,6 +30,13 @@ public class ArrayInterpolatableChannel<T>
         super(keyframes);
     }
 
+    /**
+     * Constructs an empty interpolatable channel
+     */
+    public ArrayInterpolatableChannel() {
+        super(new ArrayList<>());
+    }
+
     @Override
     public T compute(float timeS) {
         assertNotDirty();

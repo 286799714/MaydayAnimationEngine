@@ -1,5 +1,6 @@
 package com.maydaymemory.mae.control.runner;
 
+import com.maydaymemory.mae.basic.Keyframe;
 import com.maydaymemory.mae.basic.Pose;
 
 import javax.annotation.Nullable;
@@ -40,7 +41,7 @@ public interface IAnimationRunner {
      * 
      * @return a list of iterables containing the extracted clips for each channel
      */
-    List<Iterable<?>> clip();
+    List<Iterable<? extends Keyframe<?>>> clip();
 
     /**
      * Extracts clips for a specific channel based on the current clip plans in animation context.
@@ -51,7 +52,7 @@ public interface IAnimationRunner {
      * @param i the index of the channel to extract clips for
      * @return an iterable containing the extracted clips for the specified channel, or null if the channel doesn't exist
      */
-    @Nullable Iterable<?> clip(int i);
+    @Nullable Iterable<? extends Keyframe<?>> clip(int i);
 
     /**
      * Evaluates curves for all channels at the current progress.

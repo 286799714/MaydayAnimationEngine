@@ -6,7 +6,7 @@ import java.util.RandomAccess;
  * Represents an animation channel that supports interpolation between keyframes.
  * 
  * <p>This interface extends {@link AnimationChannel} to provide interpolation capabilities
- * and implements {@link RandomAccess} to allow efficient indexed access to keyframes.
+ * and extends {@link RandomAccess} to allow efficient indexed access to keyframes.
  * Interpolatable channels are used for smooth animation playback by computing
  * intermediate values between keyframes.</p>
  * 

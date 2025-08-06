@@ -80,7 +80,7 @@ public interface Animation {
      *         If no channel is set at an index, the result at that index will be {@code null}.
      * @see ClipChannel#clip(float, float)
      */
-    List<Iterable<?>> clip(float fromTimeS, float toTimeS);
+    List<Iterable<? extends Keyframe<?>>> clip(float fromTimeS, float toTimeS);
 
     /**
      * <p>Returns a clip result for the channel at the given index.</p>
@@ -95,7 +95,7 @@ public interface Animation {
      * @param toTimeS the end time of the clip period (exclusive), in seconds.
      * @return the clip result for the channel at the given index.
      */
-    @Nullable Iterable<?> clip(int i, float fromTimeS, float toTimeS);
+    @Nullable Iterable<? extends Keyframe<?>> clip(int i, float fromTimeS, float toTimeS);
 
     /**
      * Set a curve(interpolatable channel) to this animation.
