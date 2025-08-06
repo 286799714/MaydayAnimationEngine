@@ -18,7 +18,7 @@ public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
     private int indexCache = -1;
 
     /**
-     * Constructs a array animation channel with specified initial list,
+     * Constructs an array animation channel with specified initial list,
      * this list will be wrapped (or, so called, enhanced), not copied, which means that the outside holding this list
      * can still access and change the list elements.
      *
@@ -52,12 +52,15 @@ public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
      * Returns the time in seconds of the last keyframe in the list.
      * This method requires the list to be in a non-dirty (refreshed) state.
      *
-     * @return the time (in seconds) of the last keyframe.
+     * @return the time (in seconds) of the last keyframe, or 0 if there is no keyframe in this channel.
      * @throws AssertionError if the internal state is dirty and has not been refreshed.
      */
     @Override
     public float getEndTimeS() {
         assertNotDirty();
+        if (innerList.isEmpty()) {
+            return 0;
+        }
         return innerList.get(innerList.size() - 1).getTimeS();
     }
 
