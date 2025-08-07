@@ -238,19 +238,6 @@ public class RealtimeVelocityEstimatorNode implements Tickable {
     }
 
     /**
-     * Clamps a vector to a maximum magnitude while preserving direction.
-     * This also applies to the rotation vector, because the length of the
-     * rotation vector after the unit quaternion log mapping is the value of the angular velocity.
-     */
-    private Vector3f clampVector(Vector3f vector, float maxMagnitude) {
-        float magnitude = vector.length();
-        if (magnitude > maxMagnitude) {
-            return vector.normalize().mul(maxMagnitude);
-        }
-        return vector;
-    }
-
-    /**
      * Creates a velocity transform from smoothed velocity data.
      */
     private BoneTransform createVelocityTransform(int boneIndex, SmoothedVelocity velocity) {
