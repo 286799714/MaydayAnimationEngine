@@ -29,7 +29,7 @@ public class SimpleAdditionalBlender implements AdditionalBlender {
                 return transform1;
             }
             Vector3fc newTranslation = transform1.translation().add(transform2.translation(), new Vector3f());
-            Quaternionf newRotation = transform1.rotation().asQuaternion().mul(transform2.rotation().asQuaternion(), new Quaternionf());
+            Quaternionf newRotation = transform2.rotation().asQuaternion().mul(transform1.rotation().asQuaternion(), new Quaternionf());
             Vector3fc newScale = transform1.scale().mul(transform2.scale(), new Vector3f());
             return boneTransformFactory.createBoneTransform(transform1.boneIndex(), newTranslation, newRotation, newScale);
         });
