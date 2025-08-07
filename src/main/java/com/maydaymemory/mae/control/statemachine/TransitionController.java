@@ -1,5 +1,6 @@
 package com.maydaymemory.mae.control.statemachine;
 
+import com.maydaymemory.mae.control.blend.IBlendCurve;
 import com.maydaymemory.mae.util.LongSupplier;
 import org.joml.Math;
 
@@ -18,8 +19,10 @@ public class TransitionController {
     /** Supplier for current time in nanoseconds */
     private final LongSupplier currentNanosSupplier;
     
-    /** Start time of the transition in nanoseconds (-1 if not started) */
-    private long startNanos = -1;
+    /** Start time of the transition in nanoseconds */
+    private long startNanos;
+
+    private boolean isStarted = false;
     
     /** Duration of the transition in nanoseconds */
     private final long duration;
@@ -48,6 +51,7 @@ public class TransitionController {
      */
     public void start() {
         this.startNanos = currentNanosSupplier.getAsLong();
+        this.isStarted = true;
     }
 
     /**
@@ -60,7 +64,7 @@ public class TransitionController {
      * @return the transition progress as a value between 0.0 and 1.0
      */
     public float getTransitionProgress() {
-        if (startNanos == -1) {
+        if (!isStarted) {
             return 0f;
         }
         long currentNanos = currentNanosSupplier.getAsLong();
@@ -77,7 +81,7 @@ public class TransitionController {
      * @return true if the transition has finished, false otherwise
      */
     public boolean isFinished() {
-        if (startNanos == -1) {
+        if (!isStarted) {
             return false;
         }
         long currentNanos = currentNanosSupplier.getAsLong();
