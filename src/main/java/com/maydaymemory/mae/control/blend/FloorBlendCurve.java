@@ -1,4 +1,4 @@
-package com.maydaymemory.mae.control.statemachine;
+package com.maydaymemory.mae.control.blend;
 
 /**
  * Implementation of {@link IBlendCurve} that returns a constant value.

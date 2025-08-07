@@ -1,4 +1,4 @@
-package com.maydaymemory.mae.control.statemachine;
+package com.maydaymemory.mae.control.blend;
 
 /**
  * Interface representing a blend curve for animation transitions.

@@ -1,6 +1,7 @@
 package com.maydaymemory.mae.control.statemachine;
 
 import com.maydaymemory.mae.basic.Pose;
+import com.maydaymemory.mae.control.blend.IBlendCurve;
 
 /**
  * Interface representing a transition between animation states.
@@ -79,9 +80,9 @@ public interface IAnimationTransition<T> {
     /**
      * Interpolates between two poses based on the transition progress.
      *
-     * <b>Design Note:</b> <br>
+     * <p><b>Design Note:</b> <br>
      * All data required for pose interpolation (such as interpolators, etc.) should be accessed via the <code>context</code> parameter.
-     * Transition instances should not store any internal state.
+     * Transition instances should not store any internal state.</p>
      *
      * @param context the context containing state information
      * @param fromPose the start pose for interpolation

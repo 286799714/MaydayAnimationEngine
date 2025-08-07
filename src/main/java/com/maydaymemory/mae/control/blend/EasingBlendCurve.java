@@ -1,4 +1,4 @@
-package com.maydaymemory.mae.control.statemachine;
+package com.maydaymemory.mae.control.blend;
 
 import com.maydaymemory.mae.util.Easing;
 

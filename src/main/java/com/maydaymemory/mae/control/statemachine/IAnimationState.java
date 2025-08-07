@@ -37,9 +37,9 @@ public interface IAnimationState<T> {
     /**
      * Called when entering this state.
      *
-     * <b>Design Note:</b> <br>
+     * <p><b>Design Note:</b> <br>
      * All data required for state entry should be accessed via the <code>context</code> parameter.
-     * State instances should not store any internal state.
+     * State instances should not store any internal state.</p>
      *
      * @param context the context containing state information
      * @param fromState the state that was active before this transition
@@ -49,9 +49,9 @@ public interface IAnimationState<T> {
     /**
      * Called when exiting this state.
      *
-     * <b>Design Note:</b> <br>
+     * <p><b>Design Note:</b> <br>
      * All data required for state exit should be accessed via the <code>context</code> parameter.
-     * State instances should not store any internal state.
+     * State instances should not store any internal state.</p>
      *
      * @param context the context containing state information
      * @param triggeredTransition the transition that caused this state to exit
@@ -61,9 +61,9 @@ public interface IAnimationState<T> {
     /**
      * Called during each update cycle while this state is active.
      *
-     * <b>Design Note:</b> <br>
+     * <p><b>Design Note:</b> <br>
      * All data required for state update should be accessed via the <code>context</code> parameter.
-     * State instances should not store any internal state.
+     * State instances should not store any internal state.</p>
      *
      * @param context the context containing state information
      */
@@ -72,9 +72,9 @@ public interface IAnimationState<T> {
     /**
      * Evaluates the pose for this state at the current time.
      *
-     * <b>Design Note:</b> <br>
+     * <p><b>Design Note:</b> <br>
      * All data required for pose evaluation (such as animation runners, etc.) should be accessed via the <code>context</code> parameter.
-     * State instances should not store any internal state.
+     * State instances should not store any internal state.</p>
      *
      * @param context the context containing state information
      * @return the evaluated pose for this state, used for rendering or transition interpolation.
