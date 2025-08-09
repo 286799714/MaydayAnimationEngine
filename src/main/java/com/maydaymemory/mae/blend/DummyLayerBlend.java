@@ -1,12 +1,17 @@
 package com.maydaymemory.mae.blend;
 
 public final class DummyLayerBlend implements LayerBlend{
-    public static final DummyLayerBlend INSTANCE = new DummyLayerBlend();
+    private final float weight;
 
-    private DummyLayerBlend(){}
+    public static final DummyLayerBlend ZERO_WEIGHT_DUMMY = new DummyLayerBlend(0);
+    public static final DummyLayerBlend ONE_WEIGHT_DUMMY = new DummyLayerBlend(1);
+
+    public DummyLayerBlend(float weight){
+        this.weight = weight;
+    }
 
     @Override
     public float getWeight(int boneIndex) {
-        return 0;
+        return weight;
     }
 }

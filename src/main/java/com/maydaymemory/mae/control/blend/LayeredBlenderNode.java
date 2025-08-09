@@ -106,6 +106,6 @@ public class LayeredBlenderNode {
      */
     public Pose getPose() {
         LayerBlend layer = layerSlot.get();
-        return blender.blend(basePoseSlot.get(), inputPoseSlot.get(), layer == null ? DummyLayerBlend.INSTANCE : layer);
+        return blender.blend(basePoseSlot.get(), inputPoseSlot.get(), layer == null ? DummyLayerBlend.ZERO_WEIGHT_DUMMY : layer);
     }
 }

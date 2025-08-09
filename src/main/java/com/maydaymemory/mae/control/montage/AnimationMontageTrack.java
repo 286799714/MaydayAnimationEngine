@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public class AnimationMontageTrack extends ArrayAnimationChannelBase<Keyframe<AnimationSegment>> {
     /** Blending layer */
-    private LayerBlend layer = DummyLayerBlend.INSTANCE;
+    private LayerBlend layer = DummyLayerBlend.ONE_WEIGHT_DUMMY;
     
     /** Whether it's an additive animation track */
     private boolean isAdditive = false;
