@@ -5,9 +5,7 @@ import com.maydaymemory.mae.basic.Keyframe;
 import com.maydaymemory.mae.util.MergedSortedIterable;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Animation Montage for managing complex animation sequences.
@@ -31,16 +29,16 @@ import java.util.HashMap;
  */
 public class AnimationMontage<T> {
     /** Animation track list, each track contains multiple animation segments, can set their own Layer for layered blending */
-    private @Nullable ArrayList<AnimationMontageTrack> tracks;
+    private @Nullable List<AnimationMontageTrack> tracks;
     
     /** Animation notification channel list, for triggering one-time notification events */
-    private @Nullable ArrayList<ClipChannel<IAnimationNotify<T>>> notifyChannels;
+    private @Nullable List<ClipChannel<IAnimationNotify<T>>> notifyChannels;
     
     /** Animation state notification channel list, for managing persistent notification states */
-    private @Nullable ArrayList<ClipChannel<AnimationNotifyStateMarker<T>>> notifyStateChannels;
+    private @Nullable List<ClipChannel<AnimationNotifyStateMarker<T>>> notifyStateChannels;
     
     /** Animation section mapping table, for managing different sections of animation */
-    private @Nullable HashMap<String, AnimationMontageSection> sections;
+    private @Nullable Map<String, AnimationMontageSection> sections;
 
     /**
      * Get the animation track list.
@@ -48,7 +46,7 @@ public class AnimationMontage<T> {
      * @return Animation track list, returns null if not set
      */
     @Nullable
-    public ArrayList<AnimationMontageTrack> getTracks() {
+    public List<AnimationMontageTrack> getTracks() {
         return tracks;
     }
 
@@ -57,7 +55,7 @@ public class AnimationMontage<T> {
      * 
      * @param tracks Animation track list, can be null
      */
-    public void setTracks(@Nullable ArrayList<AnimationMontageTrack> tracks) {
+    public void setTracks(@Nullable List<AnimationMontageTrack> tracks) {
         this.tracks = tracks;
     }
 
@@ -67,7 +65,7 @@ public class AnimationMontage<T> {
      * @return Animation notification channel list, returns null if not set
      */
     @Nullable
-    public ArrayList<ClipChannel<IAnimationNotify<T>>> getNotifyChannels() {
+    public List<ClipChannel<IAnimationNotify<T>>> getNotifyChannels() {
         return notifyChannels;
     }
 
@@ -76,7 +74,7 @@ public class AnimationMontage<T> {
      * 
      * @param notifyChannels Animation notification channel list, can be null
      */
-    public void setNotifyChannels(@Nullable ArrayList<ClipChannel<IAnimationNotify<T>>> notifyChannels) {
+    public void setNotifyChannels(@Nullable List<ClipChannel<IAnimationNotify<T>>> notifyChannels) {
         this.notifyChannels = notifyChannels;
     }
 
@@ -86,7 +84,7 @@ public class AnimationMontage<T> {
      * @return Animation state notification channel list, returns null if not set
      */
     @Nullable
-    public ArrayList<ClipChannel<AnimationNotifyStateMarker<T>>> getNotifyStateChannels() {
+    public List<ClipChannel<AnimationNotifyStateMarker<T>>> getNotifyStateChannels() {
         return notifyStateChannels;
     }
 
@@ -95,7 +93,7 @@ public class AnimationMontage<T> {
      * 
      * @param notifyStateChannels Animation state notification channel list, can be null
      */
-    public void setNotifyStateChannels(@Nullable ArrayList<ClipChannel<AnimationNotifyStateMarker<T>>> notifyStateChannels) {
+    public void setNotifyStateChannels(@Nullable List<ClipChannel<AnimationNotifyStateMarker<T>>> notifyStateChannels) {
         this.notifyStateChannels = notifyStateChannels;
     }
 
@@ -105,7 +103,7 @@ public class AnimationMontage<T> {
      * @return Animation section mapping table, returns null if not set
      */
     @Nullable
-    public HashMap<String, AnimationMontageSection> getSections() {
+    public Map<String, AnimationMontageSection> getSections() {
         return sections;
     }
 
@@ -114,7 +112,7 @@ public class AnimationMontage<T> {
      * 
      * @param sections Animation section mapping table, can be null
      */
-    public void setSections(@Nullable HashMap<String, AnimationMontageSection> sections) {
+    public void setSections(@Nullable Map<String, AnimationMontageSection> sections) {
         this.sections = sections;
     }
 

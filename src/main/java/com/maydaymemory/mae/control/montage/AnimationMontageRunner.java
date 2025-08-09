@@ -234,7 +234,7 @@ public class AnimationMontageRunner<T> implements Tickable {
      */
     public Pose getPose() {
         Pose basePose = basePoseSlot.get();
-        ArrayList<AnimationMontageTrack> tracks = montage.getTracks();
+        List<AnimationMontageTrack> tracks = montage.getTracks();
         if (tracks == null) {
             return basePose;
         }
