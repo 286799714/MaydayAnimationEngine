@@ -9,84 +9,77 @@ import com.maydaymemory.mae.control.Slot;
 /**
  * A control node that wraps an {@link AdditiveBlender} for pose blending operations.
  * 
- * <p>This node provides a control interface for additive blending, which combines
- * two poses using additive blending techniques. Additive blending is commonly
- * used for layering animations where one pose adds to another rather than
- * replacing it completely.</p>
- * 
- * <p>The node manages input slots for two poses (A and B) and provides an output
- * port that delivers the additively blended result.</p>
- * 
  * @author MaydayMemory
  * @since 1.0.1
  */
 public class AdditiveBlenderNode {
-    /** The underlying additive blender that performs the actual blending operation */
+    /** The underlying additional blender that performs the actual blending operation */
     private final AdditiveBlender blender;
     
-    /** Output port that provides the additively blended pose result */
+    /** Output port that provides the blended pose result */
     private final OutputPort<Pose> outputPort = this::getPose;
     
-    /** Input slot for the first pose (pose A) */
-    private final Slot<Pose> poseSlotA = new PoseSlot();
+    /** Input slot for the base pose to be blended */
+    private final Slot<Pose> basePoseSlot = new PoseSlot();
     
-    /** Input slot for the second pose (pose B) */
-    private final Slot<Pose> poseSlotB = new PoseSlot();
+    /** Input slot for the additional pose to be blended with the base pose */
+    private final Slot<Pose> additionalPoseSlot = new PoseSlot();
 
     /**
-     * Constructs a new AdditiveBlenderNode with the specified blender.
+     * Constructs a new AdditionalBlenderNode with the specified blender.
      * 
-     * @param blender the AdditiveBlender instance to use for pose blending
+     * @param blender the AdditionalBlender instance to use for pose blending
+     * @throws IllegalArgumentException if blender is null
      */
     public AdditiveBlenderNode(AdditiveBlender blender) {
         this.blender = blender;
     }
 
     /**
-     * Gets the underlying AdditiveBlender instance.
+     * Gets the underlying AdditionalBlender instance.
      * 
-     * @return the AdditiveBlender used by this node
+     * @return the AdditionalBlender used by this node
      */
     public AdditiveBlender getBlender() {
         return blender;
     }
 
     /**
-     * Gets the output port that provides the additively blended pose.
+     * Gets the output port that provides the blended pose.
      * 
-     * @return the OutputPort for the additively blended pose result
+     * @return the OutputPort for the blended pose result
      */
     public OutputPort<Pose> getOutputPort() {
         return outputPort;
     }
 
     /**
-     * Gets the input slot for the first pose (pose A).
+     * Gets the input slot for the base pose.
      * 
-     * @return the Slot for the first pose input
+     * @return the Slot for the base pose input
      */
-    public Slot<Pose> getPoseSlotA() {
-        return poseSlotA;
+    public Slot<Pose> getBasePoseSlot() {
+        return basePoseSlot;
     }
 
     /**
-     * Gets the input slot for the second pose (pose B).
+     * Gets the input slot for the additional pose.
      * 
-     * @return the Slot for the second pose input
+     * @return the Slot for the additional pose input
      */
-    public Slot<Pose> getPoseSlotB() {
-        return poseSlotB;
+    public Slot<Pose> getAdditionalPoseSlot() {
+        return additionalPoseSlot;
     }
 
     /**
-     * Performs the additive blending operation using the current poses from input slots.
+     * Performs the blending operation using the current poses from input slots.
      * 
-     * This method retrieves the poses from both input slots and uses the underlying
-     * AdditiveBlender to combine them additively.
+     * This method retrieves the poses from the base and additional pose slots
+     * and uses the underlying AdditionalBlender to combine them.
      * 
-     * @return the additively blended pose result
+     * @return the blended pose result
      */
     public Pose getPose() {
-        return blender.blend(poseSlotA.get(), poseSlotB.get());
+        return blender.blend(basePoseSlot.get(), additionalPoseSlot.get());
     }
 }

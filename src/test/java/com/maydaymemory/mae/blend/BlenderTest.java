@@ -11,7 +11,7 @@ import java.util.*;
 
 public class BlenderTest {
     @Test
-    public void testSimpleAdditiveBlender() {
+    public void testSimpleEulerAdditiveBlender() {
         BoneTransformFactory transformFactory = new ZYXBoneTransformFactory();
         Vector3f translation1 = new Vector3f(1, 2, 3);
         Vector3f translation2 = new Vector3f(2, 3, 4);
@@ -27,7 +27,7 @@ public class BlenderTest {
         ArrayPose arrayPose = new ArrayPose(new ArrayList<>(Arrays.asList(boneTransform1, boneTransform2, boneTransform4)));
         ArrayPose arrayPose1 = new ArrayPose(new ArrayList<>(Collections.singletonList(boneTransform3)));
 
-        AdditiveBlender blender = new SimpleAdditiveBlender(transformFactory, LinkedListPoseBuilder::new);
+        EulerAdditiveBlender blender = new SimpleEulerAdditiveBlender(transformFactory, LinkedListPoseBuilder::new);
         Pose output = blender.blend(arrayPose1, arrayPose);
         Iterator<BoneTransform> iterator = output.getBoneTransforms().iterator();
         BoneTransform outputTransform1 = iterator.next();

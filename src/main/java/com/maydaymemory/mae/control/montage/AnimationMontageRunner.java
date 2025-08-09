@@ -42,7 +42,7 @@ public class AnimationMontageRunner<T> implements Tickable {
     private final LayeredBlender layeredBlender;
     
     /** Additional blender, for handling additive animation blending */
-    private final AdditionalBlender additionalBlender;
+    private final AdditiveBlender additiveBlender;
     
     /** Merge blender, for merging multiple poses */
     private final MergeBlender mergeBlender;
@@ -91,7 +91,7 @@ public class AnimationMontageRunner<T> implements Tickable {
         this.montage = montage;
         this.context = context;
         this.layeredBlender = new SimpleLayeredBlender(boneTransformFactory, poseBuilderSupplier);
-        this.additionalBlender = new SimpleAdditionalBlender(boneTransformFactory, poseBuilderSupplier);
+        this.additiveBlender = new SimpleAdditiveBlender(boneTransformFactory, poseBuilderSupplier);
         this.mergeBlender = new NoAllocMergeBlender();
         this.nanoTimeSupplier = nanoTimeSupplier;
         // TODO 补充 section 跳转的回调
@@ -253,7 +253,7 @@ public class AnimationMontageRunner<T> implements Tickable {
             Pose animationPose = segment.getAnimation().evaluate(segment.getStartTime() + localProgress);
             if (track.isAdditive()) {
                 Pose addtivePose = layeredBlender.blend(DummyPose.INSTANCE, animationPose, track.getLayer());
-                blendedPoses.add(additionalBlender.blend(basePose, addtivePose));
+                blendedPoses.add(additiveBlender.blend(basePose, addtivePose));
             } else {
                 blendedPoses.add(layeredBlender.blend(basePose, animationPose, track.getLayer()));
             }
