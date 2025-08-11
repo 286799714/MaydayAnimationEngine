@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Implementation of {@link IAnimationRunner} that manages animation execution.
@@ -74,25 +73,25 @@ public class AnimationRunner implements Tickable, IAnimationRunner {
     }
 
     @Override
-    public List<Iterable<? extends Keyframe<?>>> clip() {
+    @Nullable
+    public <T> Iterable<Keyframe<T>> clip(String channelName) {
         Iterator<? extends LongLongImmutablePair> iterator = context.clipPlanIterator();
         if (!iterator.hasNext()) {
-            // The index where the channel exists corresponds to an empty set,
-            // while the index where the channel does not exist corresponds to null
-            return animation.clip(0, 0);
+            // Returning clip(name, 0, 0) is to maintain logical consistency:
+            // if the channel exists, return an empty set; if not, return null.
+            return animation.clip(channelName, 0, 0);
         }
         LongLongImmutablePair pair = iterator.next();
-        List<Iterable<? extends Keyframe<?>>> result = animation.clip(MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
-        List<Iterable<? extends Keyframe<?>>> clips;
+        Iterable<Keyframe<T>> result = animation.clip(channelName, MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
+        if (result == null) {
+            return  null;
+        }
+        Iterable<Keyframe<T>> clip;
         while (iterator.hasNext()) {
             pair = iterator.next();
-            clips = animation.clip(MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
-            for (int i = 0; i < result.size(); i++) {
-                Iterable<? extends Keyframe<?>> a = result.get(i);
-                if (a == null) {
-                    continue;
-                }
-                result.set(i, Iterables.concat(a, clips.get(i)));
+            clip = animation.clip(channelName, MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
+            if (clip != null && clip.iterator().hasNext()) {
+                result = Iterables.concat(result, clip);
             }
         }
         return result;
@@ -100,34 +99,8 @@ public class AnimationRunner implements Tickable, IAnimationRunner {
 
     @Override
     @Nullable
-    public Iterable<? extends Keyframe<?>> clip(int i) {
-        Iterator<? extends LongLongImmutablePair> iterator = context.clipPlanIterator();
-        if (!iterator.hasNext()) {
-            return animation.clip(i, 0, 0);
-        }
-        LongLongImmutablePair pair = iterator.next();
-        Iterable<? extends Keyframe<?>> result = animation.clip(i, MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
-        if (result == null) {
-            return  null;
-        }
-        Iterable<? extends Keyframe<?>> clip;
-        while (iterator.hasNext()) {
-            pair = iterator.next();
-            clip = animation.clip(i, MathUtil.toSecond(pair.leftLong()), MathUtil.toSecond(pair.rightLong()));
-            result = Iterables.concat(result, clip);
-        }
-        return result;
-    }
-
-    @Override
-    public List<Object> evaluateCurve() {
-        return animation.evaluateCurve(MathUtil.toSecond(context.getProgress()));
-    }
-
-    @Override
-    @Nullable
-    public Object evaluateCurve(int i) {
-        return animation.evaluateCurve(i, MathUtil.toSecond(context.getProgress()));
+    public <T> T evaluateCurve(String curveName) {
+        return animation.evaluateCurve(curveName, MathUtil.toSecond(context.getProgress()));
     }
 
     @Override

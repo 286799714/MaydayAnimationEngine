@@ -1,5 +1,6 @@
 package com.maydaymemory.mae.basic;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
@@ -7,7 +8,6 @@ import org.joml.Vector3fc;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -22,8 +22,9 @@ public class BasicAnimation implements Animation {
     // inserting tracks will be less efficient, but this usually doesn't need to be efficient,
     // because animations are generally static assets.
     private final ArrayList<ChannelBunch> channels = new ArrayList<>();
-    private final ArrayList<ClipChannel<?>> clipChannels = new ArrayList<>();
-    private final ArrayList<InterpolatableChannel<?>> curves = new ArrayList<>();
+    // use array map since additional channels or curves usually not that many
+    private @Nullable Object2ObjectArrayMap<String, ClipChannel<?>> clipChannels;
+    private @Nullable Object2ObjectArrayMap<String, InterpolatableChannel<?>> curves;
 
     private final Supplier<PoseBuilder> poseBuilderSupplier;
     private final BoneTransformFactory transformFactory;
@@ -96,87 +97,47 @@ public class BasicAnimation implements Animation {
     }
 
     @Override
-    public void setClipChannel(int i, ClipChannel<?> channel) {
-        int size = clipChannels.size();
-        if (i == size) {
-            clipChannels.add(channel);
-        } else if (i > size) { // ensure array capability
-            for (int j = i; j > size; j--) {
-                clipChannels.add(null);
-            }
-            clipChannels.add(channel);
-        } else {
-            clipChannels.set(i, channel);
+    public void setClipChannel(String channelName, ClipChannel<?> channel) {
+        if (clipChannels == null) {
+            clipChannels = new Object2ObjectArrayMap<>();
         }
+        clipChannels.put(channelName, channel);
         endTimeS = -1;
     }
 
     @Override
-    public List<Iterable<? extends Keyframe<?>>> clip(float fromTimeS, float toTimeS) {
-        ArrayList<Iterable<? extends Keyframe<?>>> results = new ArrayList<>(clipChannels.size());
-        for (ClipChannel<?> clipChannel : clipChannels) {
-            if (clipChannel != null) {
-                results.add(clipChannel.clip(fromTimeS, toTimeS));
-            } else {
-                results.add(null);
-            }
-        }
-        return results;
-    }
-
     @Nullable
-    @Override
-    public Iterable<? extends Keyframe<?>> clip(int i, float fromTimeS, float toTimeS) {
-        if (i >= clipChannels.size() || i < 0) {
+    @SuppressWarnings("unchecked")
+    public <T> Iterable<Keyframe<T>> clip(String channelName, float fromTimeS, float toTimeS) {
+        if (clipChannels == null) {
             return null;
         }
-        ClipChannel<?> channel = clipChannels.get(i);
-        if (channel != null) {
-            return channel.clip(fromTimeS, toTimeS);
-        }
-        return null;
-    }
-
-    @Override
-    public void setCurve(int i, @Nullable InterpolatableChannel<?> curve) {
-        int size = curves.size();
-        if (i == size) {
-            curves.add(curve);
-        } else if (i > size) { // ensure array capability
-            for (int j = i; j > size; j--) {
-                curves.add(null);
-            }
-            curves.add(curve);
-        } else {
-            curves.set(i, curve);
-        }
-        endTimeS = -1;
-    }
-
-    @Override
-    public List<Object> evaluateCurve(float timeS) {
-        ArrayList<Object> results = new ArrayList<>(curves.size());
-        for (InterpolatableChannel<?> curve : curves) {
-            if (curve != null) {
-                results.add(curve.compute(timeS));
-            } else {
-                results.add(null);
-            }
-        }
-        return results;
-    }
-
-    @Nullable
-    @Override
-    public Object evaluateCurve(int i, float timeS) {
-        if (i >= curves.size() || i < 0) {
+        ClipChannel<?> channel = clipChannels.get(channelName);
+        if (channel == null) {
             return null;
         }
-        InterpolatableChannel<?> curve = curves.get(i);
-        if (curve != null) {
-            return curve.compute(timeS);
+        return (Iterable<Keyframe<T>>) (Iterable<?>) channel.clip(fromTimeS, toTimeS);
+    }
+
+    @Override
+    public void setCurve(String curveName, @Nullable InterpolatableChannel<?> curve) {
+        if (curves == null) {
+            curves = new Object2ObjectArrayMap<>();
         }
-        return null;
+        curves.put(curveName, curve);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> @Nullable T evaluateCurve(String curveName, float timeS) {
+        if (curves == null) {
+            return null;
+        }
+        InterpolatableChannel<?> curve = curves.get(curveName);
+        if (curve == null) {
+            return null;
+        }
+        return (T) curve.compute(timeS);
     }
 
     @Override
@@ -194,14 +155,18 @@ public class BasicAnimation implements Animation {
                     endTimeS = Math.max(channelBunch.scaleChannel.getEndTimeS(), endTimeS);
                 }
             }
-            for (ClipChannel<?> channel : clipChannels) {
-                if (channel != null) {
-                    endTimeS = Math.max(channel.getEndTimeS(), endTimeS);
+            if (clipChannels != null) {
+                for (ClipChannel<?> channel : clipChannels.values()) {
+                    if (channel != null) {
+                        endTimeS = Math.max(channel.getEndTimeS(), endTimeS);
+                    }
                 }
             }
-            for (InterpolatableChannel<?> channel : curves) {
-                if (channel != null) {
-                    endTimeS = Math.max(channel.getEndTimeS(), endTimeS);
+            if (curves != null) {
+                for (InterpolatableChannel<?> channel : curves.values()) {
+                    if (channel != null) {
+                        endTimeS = Math.max(channel.getEndTimeS(), endTimeS);
+                    }
                 }
             }
         }

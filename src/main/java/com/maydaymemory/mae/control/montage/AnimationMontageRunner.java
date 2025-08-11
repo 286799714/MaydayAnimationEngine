@@ -5,11 +5,16 @@ import com.maydaymemory.mae.blend.*;
 import com.maydaymemory.mae.control.OutputPort;
 import com.maydaymemory.mae.control.PoseSlot;
 import com.maydaymemory.mae.control.Tickable;
+import com.maydaymemory.mae.util.Iterables;
 import com.maydaymemory.mae.util.LongSupplier;
 import com.maydaymemory.mae.util.MathUtil;
+import com.maydaymemory.mae.util.MergedSortedIterable;
+import it.unimi.dsi.fastutil.floats.FloatFloatImmutablePair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -49,6 +54,8 @@ public class AnimationMontageRunner<T> implements Tickable {
 
     /** Animation montage instance */
     private final AnimationMontage<T> montage;
+
+    private final ArrayList<FloatFloatImmutablePair> clipPlans = new ArrayList<>();
     
     /** Context object */
     private final T context;
@@ -94,7 +101,6 @@ public class AnimationMontageRunner<T> implements Tickable {
         this.additiveBlender = new SimpleAdditiveBlender(boneTransformFactory, poseBuilderSupplier);
         this.mergeBlender = new NoAllocMergeBlender();
         this.nanoTimeSupplier = nanoTimeSupplier;
-        // TODO 补充 section 跳转的回调
     }
 
     /**
@@ -238,19 +244,15 @@ public class AnimationMontageRunner<T> implements Tickable {
         if (tracks == null) {
             return basePose;
         }
-        float progressInSecond = MathUtil.toSecond(progress);
         List<Pose> blendedPoses = new ArrayList<>();
         for (AnimationMontageTrack track : tracks) {
             if (!track.isEnabled()) {
                 continue;
             }
-            Keyframe<AnimationSegment> segmentKeyframe = track.getSegmentKeyframe(progressInSecond);
-            if (segmentKeyframe == null) {
+            Pose animationPose = track.evaluate(MathUtil.toSecond(progress));
+            if (animationPose == null) {
                 continue;
             }
-            float localProgress = progressInSecond - segmentKeyframe.getTimeS();
-            AnimationSegment segment = segmentKeyframe.getValue();
-            Pose animationPose = segment.getAnimation().evaluate(segment.getStartTime() + localProgress);
             if (track.isAdditive()) {
                 Pose addtivePose = layeredBlender.blend(DummyPose.INSTANCE, animationPose, track.getLayer());
                 blendedPoses.add(additiveBlender.blend(basePose, addtivePose));
@@ -262,6 +264,49 @@ public class AnimationMontageRunner<T> implements Tickable {
             return basePose;
         }
         return mergeBlender.blend(blendedPoses);
+    }
+
+    public <E> List<E> evaluateCurves(String curveName) {
+        List<AnimationMontageTrack> tracks = montage.getTracks();
+        if (tracks == null || tracks.isEmpty()) {
+            return Collections.emptyList();
+        }
+        ArrayList<E> arrayList = new ArrayList<>();
+        for (AnimationMontageTrack track : tracks) {
+            if (!track.isEnabled()) {
+                arrayList.add(null);
+            } else {
+                arrayList.add(track.evaluateCurve(curveName, MathUtil.toSecond(progress)));
+            }
+        }
+        return arrayList;
+    }
+
+    @Nonnull
+    public <E> Iterable<Keyframe<E>> clip(String channelName) {
+        List<AnimationMontageTrack> tracks = montage.getTracks();
+        if (tracks == null || tracks.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Iterable<Keyframe<E>> result = null;
+        for (FloatFloatImmutablePair clipPlan : clipPlans) {
+            float first = clipPlan.firstFloat();
+            float second = clipPlan.secondFloat();
+            ArrayList<Iterable<Keyframe<E>>> clips = new ArrayList<>();
+            for (AnimationMontageTrack track : tracks) {
+                if (track.isEnabled()) {
+                    Iterable<Keyframe<E>> clip = track.clip(channelName, first, second);
+                    if (clip != null && clip.iterator().hasNext()) {
+                        clips.add(clip);
+                    }
+                }
+            }
+            if (!clips.isEmpty()) {
+                Iterable<Keyframe<E>> mergedClip = new MergedSortedIterable<>(clips, Keyframe<E>::compareTo);
+                result = result == null ? mergedClip : Iterables.concat(result, mergedClip);
+            }
+        }
+        return result == null ? Collections.emptyList() : result;
     }
 
     /**
@@ -279,7 +324,7 @@ public class AnimationMontageRunner<T> implements Tickable {
         lastUpdateTime = currentNanos;
         long sectionEndNanos = MathUtil.toNanos(section.getEndTime());
         if (newProgress >= sectionEndNanos) {
-            tickNotifiesAndNotifyStates(MathUtil.toSecond(progress), section.getEndTime() + Math.ulp(section.getEndTime()));
+            tickRange(MathUtil.toSecond(progress), section.getEndTime() + Math.ulp(section.getEndTime()));
             String nextSectionName = section.getNextSection();
             section = nextSectionName == null ? null : montage.getSection(nextSectionName);
             long overshootNanos = newProgress - sectionEndNanos;
@@ -289,32 +334,34 @@ public class AnimationMontageRunner<T> implements Tickable {
                     break;
                 }
                 sectionEndNanos = MathUtil.toNanos(section.getEndTime());
-                tickNotifiesAndNotifyStates(section.getStartTime(), section.getEndTime() + Math.ulp(section.getEndTime()));
+                tickRange(section.getStartTime(), section.getEndTime() + Math.ulp(section.getEndTime()));
                 nextSectionName = section.getNextSection();
                 section = nextSectionName == null ? null : montage.getSection(nextSectionName);
                 overshootNanos -= sectionLengthNanos;
             }
             if (section != null) {
                 newProgress = MathUtil.toNanos(section.getStartTime()) + overshootNanos;
-                tickNotifiesAndNotifyStates(section.getStartTime(), MathUtil.toSecond(newProgress));
+                tickRange(section.getStartTime(), MathUtil.toSecond(newProgress));
                 progress = newProgress;
             } else {
                 progress = sectionEndNanos;
                 isPlaying = false;
             }
         } else {
-            tickNotifiesAndNotifyStates(MathUtil.toSecond(progress), MathUtil.toSecond(newProgress));
+            tickRange(MathUtil.toSecond(progress), MathUtil.toSecond(newProgress));
             progress = newProgress;
         }
     }
 
     /**
-     * Trigger notifications and update notification states.
+     * Trigger notifications and update notification states, update clip plan.
      * 
      * @param fromTime Start time (seconds)
      * @param toTime End time (seconds)
      */
-    private void tickNotifiesAndNotifyStates(float fromTime, float toTime) {
+    private void tickRange(float fromTime, float toTime) {
+        clipPlans.clear();
+        clipPlans.add(new FloatFloatImmutablePair(fromTime, toTime));
         triggerNotifies(fromTime, toTime);
         updateNotifyStateSet(fromTime, toTime);
         for (Map.Entry<IAnimationNotifyState<T>, NotifyStateControlBlock> entry : notifyStates.entrySet()) {

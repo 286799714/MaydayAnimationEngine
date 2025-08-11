@@ -6,9 +6,8 @@ import javax.annotation.Nullable;
 
 import com.maydaymemory.mae.util.MathUtil;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * Implementation of {@link IAnimationContext} that manages animation execution state.
@@ -34,8 +33,8 @@ public class AnimationContext implements IAnimationContext {
     /** Current animation state */
     private IAnimationState state;
     
-    /** Queue for storing clip plans (time range pairs) */
-    private final Queue<LongLongImmutablePair> clipPlanQueue = new LinkedList<>();
+    /** List for storing clip plans (time range pairs) */
+    private final ArrayList<LongLongImmutablePair> clipPlans = new ArrayList<>();
 
     /**
      * Constructs a new AnimationContext with the specified maximum progress.
@@ -82,12 +81,12 @@ public class AnimationContext implements IAnimationContext {
 
     @Override
     public void enqueueClipPlan(LongLongImmutablePair plan) {
-        clipPlanQueue.offer(plan);
+        clipPlans.add(plan);
     }
 
     @Override
     public Iterator<? extends LongLongImmutablePair> clipPlanIterator() {
-        return clipPlanQueue.iterator();
+        return clipPlans.iterator();
     }
 
     @Override
@@ -116,7 +115,7 @@ public class AnimationContext implements IAnimationContext {
 
     @Override
     public void update() {
-        clipPlanQueue.clear();
+        clipPlans.clear();
         if (state != null) {
             setState(state.update(this));
         }

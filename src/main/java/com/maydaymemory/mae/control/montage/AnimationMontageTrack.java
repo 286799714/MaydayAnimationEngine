@@ -2,8 +2,10 @@ package com.maydaymemory.mae.control.montage;
 
 import com.maydaymemory.mae.basic.ArrayAnimationChannelBase;
 import com.maydaymemory.mae.basic.Keyframe;
+import com.maydaymemory.mae.basic.Pose;
 import com.maydaymemory.mae.blend.DummyLayerBlend;
 import com.maydaymemory.mae.blend.LayerBlend;
+import com.maydaymemory.mae.util.Iterables;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -91,6 +93,106 @@ public class AnimationMontageTrack extends ArrayAnimationChannelBase<Keyframe<An
         } else {
             return null;
         }
+    }
+
+    /**
+     * Evaluate the track at the specified progress time.
+     * If there is no segment playing at the specified time point, returns null.
+     *
+     * @param progressTimeS the progress time (seconds)
+     * @return evaluated pose, or null if there is no segment playing at the specified time point
+     */
+    @Nullable
+    public Pose evaluate(float progressTimeS) {
+        Keyframe<AnimationSegment> segmentKeyframe = this.getSegmentKeyframe(progressTimeS);
+        if (segmentKeyframe == null) {
+            return null;
+        }
+        float localProgress = progressTimeS - segmentKeyframe.getTimeS();
+        AnimationSegment segment = segmentKeyframe.getValue();
+        return segment.getAnimation().evaluate(segment.getStartTime() + localProgress);
+    }
+
+    /**
+     * Evaluate the track's curve at the specified progress time.
+     *
+     * <p><b>Important: </b>Type safety is not checked internally.
+     * Please ensure that the curve type specified is the same when setting and getting.</p>
+     *
+     * @param curveName the name of the curve to evaluate
+     * @param progressTimeS the progress time (seconds)
+     * @return evaluated curve value, or null if the curve is not found or there is no segment at the specified time point
+     * @param <T> the type of the curve value
+     */
+    @Nullable
+    public <T> T evaluateCurve(String curveName, float progressTimeS) {
+        Keyframe<AnimationSegment> segmentKeyframe = this.getSegmentKeyframe(progressTimeS);
+        if (segmentKeyframe == null) {
+            return null;
+        }
+        float localProgress = progressTimeS - segmentKeyframe.getTimeS();
+        AnimationSegment segment = segmentKeyframe.getValue();
+        return segment.getAnimation().evaluateCurve(curveName, segment.getStartTime() + localProgress);
+    }
+
+    /**
+     * Clip the track's channel.
+     *
+     * <p><b>Important: </b>Type safety is not enforced internally.
+     * Make sure that all segments’ channels named {@code channelName} are of the same type.</p>
+     *
+     * @param channelName the name of the channel to extract
+     * @param fromTimeS the start time (seconds)
+     * @param toTimeS the end time (seconds)
+     * @return an iterable of keyframes, or {@code null} if no segment with a channel named {@code channelName} exists within the specified time period.
+     * @param <T> the type of the channel value
+     */
+    @Nullable
+    public <T> Iterable<Keyframe<T>> clip(String channelName, float fromTimeS, float toTimeS) {
+        int fromIndex = findIndexBefore(fromTimeS, false);
+        int toIndex = findIndexBefore(toTimeS, true);
+        if (fromIndex != -1) {
+            Keyframe<AnimationSegment> keyframe = get(fromIndex);
+            if (keyframe.getTimeS() + keyframe.getValue().getLength() < fromTimeS) {
+                fromIndex++;
+            }
+        } else {
+            fromIndex = 0;
+        }
+        if (fromIndex == toIndex) {
+            Keyframe<AnimationSegment> keyframe = get(fromIndex);
+            float keyframeTime = keyframe.getTimeS();
+            AnimationSegment segment = keyframe.getValue();
+            float segmentEndTime = segment.getEndTime();
+            float clipStartTime = fromTimeS > keyframeTime ? segment.getStartTime() + fromTimeS - keyframeTime : segment.getStartTime();
+            float clipEndTime = toTimeS <= keyframeTime + segment.getLength() ? segment.getStartTime() + toTimeS - keyframeTime : segmentEndTime + Math.ulp(segmentEndTime);
+            return segment.getAnimation().clip(channelName, clipStartTime, clipEndTime);
+        }
+        if (fromIndex < toIndex) {
+            Keyframe<AnimationSegment> firstKeyframe = get(fromIndex);
+            float firstKeyframeTime = firstKeyframe.getTimeS();
+            AnimationSegment firstSegment = firstKeyframe.getValue();
+            float firstClipLeft = fromTimeS > firstKeyframeTime ? firstSegment.getStartTime() + fromTimeS - firstKeyframeTime : firstSegment.getStartTime();
+            float firstClipRight = firstSegment.getEndTime();
+            Iterable<Keyframe<T>> clip = firstSegment.getAnimation().clip(channelName, firstClipLeft, firstClipRight + Math.ulp(firstClipRight));
+            for (int i = fromIndex + 1; i <= toIndex - 1; i++) {
+                AnimationSegment segment = get(i).getValue();
+                float endTime = segment.getEndTime();
+                Iterable<Keyframe<T>> newClip = segment.getAnimation().clip(channelName, segment.getStartTime(), endTime + Math.ulp(endTime));
+                if (newClip != null) {
+                    clip = clip == null ? newClip : Iterables.concat(clip, newClip);
+                }
+            }
+            Keyframe<AnimationSegment> lastKeyframe = get(toIndex);
+            AnimationSegment lastSegment = lastKeyframe.getValue();
+            float lastSegmentStartTime = lastSegment.getStartTime();
+            Iterable<Keyframe<T>> lastClip = lastSegment.getAnimation().clip(channelName, lastSegmentStartTime, lastSegmentStartTime + toTimeS - lastKeyframe.getTimeS());
+            if (lastClip != null) {
+                clip = clip == null ? lastClip : Iterables.concat(clip, lastClip);
+            }
+            return clip;
+        }
+        return null;
     }
 
     /**

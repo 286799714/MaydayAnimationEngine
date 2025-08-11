@@ -4,7 +4,6 @@ import com.maydaymemory.mae.basic.Keyframe;
 import com.maydaymemory.mae.basic.Pose;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Interface representing an animation runner that manages animation execution.
@@ -34,46 +33,29 @@ public interface IAnimationRunner {
     Pose evaluate();
 
     /**
-     * Extracts clips for all channels based on the current clip plans in animation context.
-     * 
-     * <p>This method processes the clip plans in the context and extracts
-     * the corresponding clips for all clipable channels. </p>
-     * 
-     * @return a list of iterables containing the extracted clips for each channel
-     */
-    List<Iterable<? extends Keyframe<?>>> clip();
-
-    /**
      * Extracts clips for a specific channel based on the current clip plans in animation context.
+     *
+     * <p>The clip plan is refreshed on each tick, so you need to make sure to call clip once per tick
+     * to avoid losing clips.</p>
+     *
+     * <p><b>Important: </b>Type safety is not checked internally.
+     * Please ensure that the curve type specified is the same when setting and getting.</p>
      * 
-     * <p>This method processes the clip plans in the context and extracts
-     * the corresponding animation clips for the specified channel index.</p>
-     * 
-     * @param i the index of the channel to extract clips for
+     * @param channelName the name of the channel to extract
      * @return an iterable containing the extracted clips for the specified channel, or null if the channel doesn't exist
      */
-    @Nullable Iterable<? extends Keyframe<?>> clip(int i);
+    @Nullable <T> Iterable<Keyframe<T>> clip(String channelName);
 
     /**
-     * Evaluates curves for all channels at the current progress.
+     * Evaluate the curve identified by the given name at the current progress.
+     *
+     * <p><b>Important: </b>Type safety is not checked internally.
+     * Please ensure that the curve type specified is the same when setting and getting.</p>
      * 
-     * <p>This method evaluates the animation curves at the current time position
-     * and returns the resulting values for all channels.</p>
-     * 
-     * @return a list of objects containing the evaluated curve values for each channel
-     */
-    List<Object> evaluateCurve();
-
-    /**
-     * Evaluates curves for a specific channel at the current progress.
-     * 
-     * <p>This method evaluates the animation curve at the current time position
-     * for the specified channel index.</p>
-     * 
-     * @param i the index of the channel to evaluate curves for
+     * @param curveName the name of the curve to evaluate
      * @return the evaluated curve value for the specified channel, or null if the channel doesn't exist
      */
-    @Nullable Object evaluateCurve(int i);
+    @Nullable <T> T evaluateCurve(String curveName);
 
     /**
      * Gets the animation context associated with this runner.
