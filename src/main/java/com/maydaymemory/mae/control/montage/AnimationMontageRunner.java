@@ -30,6 +30,10 @@ import java.util.function.Supplier;
  *   <li>Animation state updates</li>
  *   <li>Section transitions</li>
  * </ul>
+ *
+ * <p><b>Important: </b>
+ * Montage Runner is not thread-safe, please do not call it asynchronously
+ * </p>
  * 
  * @param <T> Context type
  * 
@@ -191,15 +195,10 @@ public class AnimationMontageRunner<T> implements Tickable {
         if (isPlaying) {
             return;
         }
-        AnimationMontageSection section = montage.getSection(sectionName);
-        if (section == null) {
-            return;
+        setSection(sectionName);
+        if (section != null) {
+            this.isPlaying = true;
         }
-        long currentNano = nanoTimeSupplier.getAsLong();
-        this.isPlaying = true;
-        this.progress = MathUtil.toNanos(section.getStartTime());
-        this.lastUpdateTime = currentNano;
-        this.section = section;
     }
 
     /**
@@ -210,18 +209,43 @@ public class AnimationMontageRunner<T> implements Tickable {
             return;
         }
         isPlaying = false;
-        section = null;
     }
 
     /**
-     * Jump to the specified section.
-     * 
-     * @param sectionName Section name to jump to
+     * Set progress directly without checking section limits.
+     *
+     * @param progress progress in nanoseconds.
      */
-    public void jumpToSection(String sectionName) {
-        if (!isPlaying) {
-            return;
+    public void setProgressUnsafe(long progress) {
+        this.progress = progress;
+        this.lastUpdateTime = nanoTimeSupplier.getAsLong();
+    }
+
+    /**
+     * Set progress and clamp to the range allowed by the current section.
+     * If no section is currently specified, do nothing.
+     *
+     * @param progress progress in nanoseconds.
+     */
+    public void setProgress(long progress) {
+        if (section != null) {
+            this.lastUpdateTime = nanoTimeSupplier.getAsLong();
+            long sectionStartTime = MathUtil.toNanos(section.getStartTime());
+            long sectionEndTime = MathUtil.toNanos(section.getEndTime());
+            if (sectionStartTime > progress) {
+                this.progress = sectionStartTime;
+            } else {
+                this.progress = Math.min(sectionEndTime, progress);
+            }
         }
+    }
+
+    /**
+     * Set the runner's current section and set the progress to the start of the section.
+     *
+     * @param sectionName the name of section.
+     */
+    public void setSection(String sectionName) {
         AnimationMontageSection section = montage.getSection(sectionName);
         if (section == null) {
             return;
@@ -229,6 +253,16 @@ public class AnimationMontageRunner<T> implements Tickable {
         this.progress = MathUtil.toNanos(section.getStartTime());
         this.lastUpdateTime = nanoTimeSupplier.getAsLong();
         this.section = section;
+    }
+
+    /**
+     * Advances the runner progress by and updates its state.
+     *
+     * @param progressAhead progress to advance, in nanosecond
+     */
+    public void tickAhead(long progressAhead) {
+        this.progress += progressAhead;
+        tick();
     }
 
     /**
