@@ -256,13 +256,29 @@ public class AnimationMontageRunner<T> implements Tickable {
     }
 
     /**
-     * Advances the runner progress by and updates its state.
+     * Push forward the runner progress.
      *
-     * @param progressAhead progress to advance, in nanosecond
+     * <p>This method is similar to {@link #tick()}, but allows you to control the progress yourself.</p>
+     *
+     * @param progressForward progress to advance, in nanosecond
      */
-    public void tickAhead(long progressAhead) {
-        this.progress += progressAhead;
-        tick();
+    public void tickForward(long progressForward) {
+        if (!isPlaying) {
+            return;
+        }
+        long newProgress = progress + progressForward;
+        lastUpdateTime = nanoTimeSupplier.getAsLong();
+        handleProgressChange(newProgress);
+    }
+
+    /**
+     * Update animation playback state.
+     *
+     * <p>This method updates playback progress, handles section transitions, and triggers corresponding notifications.</p>
+     */
+    @Override
+    public void tick() {
+        tickForward((long) ((nanoTimeSupplier.getAsLong() - lastUpdateTime) * speed));
     }
 
     /**
@@ -343,19 +359,7 @@ public class AnimationMontageRunner<T> implements Tickable {
         return result == null ? Collections.emptyList() : result;
     }
 
-    /**
-     * Update animation playback state.
-     * 
-     * <p>This method updates playback progress, handles section transitions, and triggers corresponding notifications.</p>
-     */
-    @Override
-    public void tick() {
-        if (!isPlaying) {
-            return;
-        }
-        long currentNanos = nanoTimeSupplier.getAsLong();
-        long newProgress = progress + (long) ((currentNanos - lastUpdateTime) * speed);
-        lastUpdateTime = currentNanos;
+    private void handleProgressChange(long newProgress) {
         long sectionEndNanos = MathUtil.toNanos(section.getEndTime());
         if (newProgress >= sectionEndNanos) {
             tickRange(MathUtil.toSecond(progress), section.getEndTime() + Math.ulp(section.getEndTime()));
