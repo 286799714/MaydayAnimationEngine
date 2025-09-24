@@ -18,7 +18,6 @@ public class DelaunayTriangulator<T extends SamplerPoint> {
 
     private final Collection<? extends SamplerPoint> pointSet;
     private TriangleSoup triangleSoup;
-    private Triangle lastContainedTriangle;
 
     /**
      * Constructor of the SimpleDelaunayTriangulator class used to create a new
@@ -148,23 +147,21 @@ public class DelaunayTriangulator<T extends SamplerPoint> {
         Vector3f weights = new Vector3f();
         // In actual use, point changes continuously most of the time.
         // Caching the last matched triangle can avoid many full table scans.
-        if (lastContainedTriangle != null) {
-            lastContainedTriangle.computeBarycentricCoordinates(point, weights);
-            if (weights.x >= 0 && weights.y >= 0 && weights.z >= 0 &&
-                    weights.x <= 1 && weights.y <= 1 && weights.z <= 1) {
-                return new WeightCalculatingResult<>(
-                        (T)lastContainedTriangle.getA(), (T)lastContainedTriangle.getB(), (T)lastContainedTriangle.getC(),
-                        weights.x, weights.y, weights.z
-                );
-            }
-        }
+//        if (lastContainedTriangle != null) {
+//            lastContainedTriangle.computeBarycentricCoordinates(point, weights);
+//            if (weights.x >= 0 && weights.y >= 0 && weights.z >= 0 &&
+//                    weights.x <= 1 && weights.y <= 1 && weights.z <= 1) {
+//                return new WeightCalculatingResult<>(
+//                        (T)lastContainedTriangle.getA(), (T)lastContainedTriangle.getB(), (T)lastContainedTriangle.getC(),
+//                        weights.x, weights.y, weights.z
+//                );
+//            }
+//        }
         for (Triangle tri : triangleSoup.getTriangles()) {
             tri.computeBarycentricCoordinates(point, weights);
             if (weights.x >= 0 && weights.y >= 0 && weights.z >= 0 &&
                     weights.x <= 1 && weights.y <= 1 && weights.z <= 1) {
-                // point is inside the tri
-                lastContainedTriangle = tri;
-                return new WeightCalculatingResult<T>(
+                return new WeightCalculatingResult<>(
                         (T)tri.getA(), (T)tri.getB(), (T)tri.getC(),
                         weights.x, weights.y, weights.z
                 );

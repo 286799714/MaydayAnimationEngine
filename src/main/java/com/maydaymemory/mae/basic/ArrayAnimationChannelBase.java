@@ -15,8 +15,6 @@ public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
         extends DirtyTrackingArrayList<T>
         implements AnimationChannel{
 
-    private int indexCache = -1;
-
     /**
      * Constructs an array animation channel with specified initial list,
      * this list will be wrapped (or, so called, enhanced), not copied, which means that the outside holding this list
@@ -44,7 +42,6 @@ public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
     @Override
     protected boolean onRefresh() {
         Collections.sort(innerList);
-        indexCache = -1;
         return true;
     }
 
@@ -83,12 +80,12 @@ public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
         }
 
         // Cache binary search results to reduce the overhead of interpolation in continuous time
-        float cachedKeyframeTime = indexCache == -1 ? Float.MIN_VALUE : innerList.get(indexCache).getTimeS();
-        if (cachedKeyframeTime < timeS || (cachedKeyframeTime == timeS && !open)) {
-            if (indexCache == innerList.size() - 1 || innerList.get(indexCache + 1).getTimeS() > timeS) {
-                return indexCache;
-            }
-        }
+//        float cachedKeyframeTime = indexCached == -1 ? Float.MIN_VALUE : innerList.get(indexCached).getTimeS();
+//        if (cachedKeyframeTime < timeS || (cachedKeyframeTime == timeS && !open)) {
+//            if (indexCached == innerList.size() - 1 || innerList.get(indexCached + 1).getTimeS() > timeS) {
+//                return indexCached;
+//            }
+//        }
 
         int low = 0;
         int high = innerList.size() - 1;
@@ -103,7 +100,6 @@ public abstract class ArrayAnimationChannelBase<T extends Keyframe<?>>
                 high = mid - 1;
             }
         }
-        indexCache = result;
         return result;
     }
 
