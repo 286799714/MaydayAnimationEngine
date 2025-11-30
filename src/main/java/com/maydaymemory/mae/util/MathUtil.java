@@ -98,6 +98,8 @@ public class MathUtil {
 
         final float EPSILON = 1e-4f;
 
+        r13 = Math.clamp(-1.0f, 1.0f, r13);
+
         if (Math.abs(r13) < 1.0f - EPSILON) {
             euler.y = Math.asin(-r13);
             euler.x = Math.atan2(r23, r33);
@@ -140,7 +142,9 @@ public class MathUtil {
         float r31 = matrix.m20();
         float r33 = matrix.m22();
 
-        final float EPSILON = 1e-5f;
+        final float EPSILON = 1e-4f;
+
+        r32 = Math.clamp(-1.0f, 1.0f, r32);
 
         if (Math.abs(r32) < 1.0f - EPSILON) {
             euler.x = Math.asin(-r32);
