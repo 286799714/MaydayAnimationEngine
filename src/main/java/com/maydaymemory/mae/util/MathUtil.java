@@ -96,7 +96,7 @@ public class MathUtil {
         float r11 = matrix.m00();
         float r12 = matrix.m01();
 
-        final float EPSILON = 1e-4f;
+        final float EPSILON = 1e-5f;
 
         r13 = Math.clamp(-1.0f, 1.0f, r13);
 
@@ -142,7 +142,7 @@ public class MathUtil {
         float r31 = matrix.m20();
         float r33 = matrix.m22();
 
-        final float EPSILON = 1e-4f;
+        final float EPSILON = 1e-5f;
 
         r32 = Math.clamp(-1.0f, 1.0f, r32);
 
