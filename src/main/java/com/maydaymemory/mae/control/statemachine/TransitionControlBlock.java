@@ -44,7 +44,13 @@ public class TransitionControlBlock<T> {
                                   Pose cachedPose, LongSupplier currentNanosSupplier) {
         this.fromState = fromState;
         this.transition = transition;
-        this.controller = new TransitionController(currentNanosSupplier, MathUtil.toNanos(transition.duration()), transition.curve());
+        if (transition.duration() <= 0) {
+            // If duration equals 0, it's generally desirable for the state to switch instantly.
+            // Duration less than 0 is meaningless, thus treated as equal to 0.
+            this.controller = null;
+        } else {
+            this.controller = new TransitionController(currentNanosSupplier, MathUtil.toNanos(transition.duration()), transition.curve());
+        }
         this.cachedPose = cachedPose;
     }
 

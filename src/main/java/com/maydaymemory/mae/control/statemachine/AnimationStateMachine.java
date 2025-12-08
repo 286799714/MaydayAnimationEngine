@@ -68,10 +68,18 @@ public class AnimationStateMachine<T> implements Tickable {
             state.onUpdate(context);
             TransitionControlBlock<T> tcb = tryTransfer(state, () -> state.evaluatePose(context));
             if (tcb != null) {
-                this.transitionControlBlock = tcb;
-                state.onExit(context, tcb.getTransition());
-                state = null;
-                tcb.getTransition().afterTrigger(context);
+                IAnimationTransition<T> transition = tcb.getTransition();
+                state.onExit(context, transition);
+                transition.afterTrigger(context);
+                if (tcb.getController() == null) {
+                    // This special case handles the situation where the transition duration is 0.
+                    IAnimationState<T> targetState = transition.targetState();
+                    targetState.onEnter(context, tcb.getFromState());
+                    this.state = targetState;
+                } else {
+                    this.transitionControlBlock = tcb;
+                    state = null;
+                }
             }
         } else if (transitionControlBlock != null) {
             if (transitionControlBlock.getController().isFinished()) {
@@ -105,8 +113,17 @@ public class AnimationStateMachine<T> implements Tickable {
                     break;
             }
             if (tcb != null) {
-                this.transitionControlBlock = tcb;
-                tcb.getTransition().afterTrigger(context);
+                IAnimationTransition<T> newTransition = tcb.getTransition();
+                newTransition.afterTrigger(context);
+                if (tcb.getController() == null) {
+                    // This special case handles the situation where the transition duration is 0.
+                    IAnimationState<T> newTargetState = newTransition.targetState();
+                    newTargetState.onEnter(context, tcb.getFromState());
+                    this.state = newTargetState;
+                    this.transitionControlBlock = null;
+                } else {
+                    this.transitionControlBlock = tcb;
+                }
             }
         }
     }
@@ -185,7 +202,10 @@ public class AnimationStateMachine<T> implements Tickable {
         for (IAnimationTransition<T> transition : state.transitions()) {
             if (transition.canTrigger(context)) {
                 TransitionControlBlock<T> tcb = new TransitionControlBlock<>(state, transition, cachedPoseSupplier.get(), currentNanosSupplier);
-                tcb.getController().start();
+                TransitionController transitionController = tcb.getController();
+                if (transitionController != null) {
+                    transitionController.start();
+                }
                 return tcb;
             }
         }
