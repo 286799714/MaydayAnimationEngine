@@ -48,6 +48,7 @@ public class NoAllocMergeBlender implements MergeBlender{
                     resultEntry = entry;
                 }
             }
+            BoneTransform result = resultEntry.value;
             Iterator<Entry> it = entries.iterator();
             while (it.hasNext()) {
                 Entry entry = it.next();
@@ -59,7 +60,7 @@ public class NoAllocMergeBlender implements MergeBlender{
                     }
                 }
             }
-            return resultEntry.value;
+            return result;
         }
 
         private static class Entry {
