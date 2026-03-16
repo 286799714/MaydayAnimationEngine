@@ -60,6 +60,12 @@ public class PlayingState implements IAnimationState {
     public IAnimationState update(IAnimationContext ctx) {
         long currentNanos = currentNanosSupplier.getAsLong();
         long alpha = (long) ((currentNanos - ctx.getLastUpdateTime()) * speed);
+
+        if (alpha == 0) {
+            ctx.setLastUpdateTime(currentNanos);
+            return this;
+        }
+
         long progress = ctx.getProgress() + alpha;
         long maxProgress = ctx.getMaxProgress();
         boolean flag = false;
