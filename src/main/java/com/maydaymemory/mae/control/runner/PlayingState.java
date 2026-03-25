@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * @author MaydayMemory
  * @since 1.0
  */
-public class PlayingState implements IAnimationState {
+public class PlayingState implements IAnimationState, IAdjustableSpeedState {
     /** Supplier for current time in nanoseconds */
     private final LongSupplier currentNanosSupplier;
     
@@ -42,6 +42,7 @@ public class PlayingState implements IAnimationState {
      * 
      * @return the speed multiplier (1.0 = normal speed)
      */
+    @Override
     public float getSpeed() {
         return speed;
     }
@@ -52,6 +53,7 @@ public class PlayingState implements IAnimationState {
      * @param speed the speed multiplier (1.0 = normal speed), 
      * setting it to a negative number will reverse the animation
      */
+    @Override
     public void setSpeed(float speed) {
         this.speed = speed;
     }

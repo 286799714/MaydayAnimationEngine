@@ -17,7 +17,7 @@ import it.unimi.dsi.fastutil.longs.LongLongImmutablePair;
  * @author MaydayMemory
  * @since 1.0.1
  */
-public class LoopingState implements IAnimationState {
+public class LoopingState implements IAnimationState, IAdjustableSpeedState {
     /** Supplier for current time in nanoseconds */
     private final LongSupplier currentNanosSupplier;
     
@@ -38,6 +38,7 @@ public class LoopingState implements IAnimationState {
      * 
      * @return the speed multiplier (1.0 = normal speed)
      */
+    @Override
     public float getSpeed() {
         return speed;
     }
@@ -47,6 +48,7 @@ public class LoopingState implements IAnimationState {
      * 
      * @param speed the speed multiplier (1.0 = normal speed)
      */
+    @Override
     public void setSpeed(float speed) {
         this.speed = speed;
     }
